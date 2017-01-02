@@ -1,5 +1,5 @@
 CC=g++
-CFLAGS=-O3 -lpqxx -lpq 
+CFLAGS=-O3 -lpqxx -lpq -g
 #DEPS =bancoDeDados.h
 
 %.o: %.cpp # $(DEPS)

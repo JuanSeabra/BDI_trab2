@@ -40,52 +40,55 @@ int main(int argc, char *argv[]){
 
 	while (getline(f,linha)) {
 		split(strs,linha,is_any_of(";"));
-		//tok = strtok(linha,";");
-		strcpy(tok,strs[0].c_str());
-		if(tok) remove_all_chars(tok,'\"');
-		cout << "id " << tok << endl;
-		bloco[blocIndex].id = atoi(tok);
- 
-		//tok = strtok(NULL,";");
-		strcpy(tok,strs[1].c_str());
-		if(tok) remove_all_chars(tok,'\"');
-		cout << "titulo " << tok << endl;
-		strncpy(bloco[blocIndex].titulo,tok,250);
 
-		//tok = strtok(NULL,";");
-		strcpy(tok,strs[2].c_str());
-		if(tok) remove_all_chars(tok,'\"');
-		cout << "ano " << tok << endl;
-		bloco[blocIndex].ano = (unsigned short) atoi(tok);
+		if (strs.size() == 7){
+			//tok = strtok(linha,";");
+			strcpy(tok,strs[0].c_str());
+			if(tok) remove_all_chars(tok,'\"');
+			//		cout << "id " << tok << endl;
+			bloco[blocIndex].id = atoi(tok);
 
-		//tok = strtok(NULL,";");
-		strcpy(tok,strs[3].c_str());
-		if(tok) remove_all_chars(tok,'\"');
-		cout << "autores " << tok << endl;
-		strncpy(bloco[blocIndex].autores,tok,50);
+			//tok = strtok(NULL,";");
+			strcpy(tok,strs[1].c_str());
+			if(tok) remove_all_chars(tok,'\"');
+			//		cout << "titulo " << tok << endl;
+			strncpy(bloco[blocIndex].titulo,tok,250);
 
-		//tok = strtok(NULL,";");
-		strcpy(tok,strs[4].c_str());
-		if(tok) remove_all_chars(tok,'\"');
-		cout << "citacoes " << tok << endl;
-		bloco[blocIndex].citacoes = (unsigned short) atoi(tok);
+			//tok = strtok(NULL,";");
+			strcpy(tok,strs[2].c_str());
+			if(tok) remove_all_chars(tok,'\"');
+			//		cout << "ano " << tok << endl;
+			bloco[blocIndex].ano = (unsigned short) atoi(tok);
 
-		//tok = strtok(NULL,";");
-		strcpy(tok,strs[5].c_str());
-		if(tok) remove_all_chars(tok,'\"');
-		cout << "atualizacao " << tok << endl;
-		strncpy(bloco[blocIndex].atualizacao,tok,20);
+			//tok = strtok(NULL,";");
+			strcpy(tok,strs[3].c_str());
+			if(tok) remove_all_chars(tok,'\"');
+			//		cout << "autores " << tok << endl;
+			strncpy(bloco[blocIndex].autores,tok,50);
 
-		//tok = strtok(NULL,";");
-		strcpy(tok,strs[6].c_str());
-		if(tok) remove_all_chars(tok,'\"');
-		cout << "snippet " << tok << endl;
-		strncpy(bloco[blocIndex].snippet,tok,1024);
+			//tok = strtok(NULL,";");
+			strcpy(tok,strs[4].c_str());
+			if(tok) remove_all_chars(tok,'\"');
+			//		cout << "citacoes " << tok << endl;
+			bloco[blocIndex].citacoes = (unsigned short) atoi(tok);
 
-		blocIndex++;
-		if(blocIndex == 3){
-			fwrite(bloco,sizeof(Artigo),sizeof(Artigo)*blocIndex,out);
-			blocIndex = 0;
+			//tok = strtok(NULL,";");
+			strcpy(tok,strs[5].c_str());
+			if(tok) remove_all_chars(tok,'\"');
+			//		cout << "atualizacao " << tok << endl;
+			strncpy(bloco[blocIndex].atualizacao,tok,20);
+
+			//tok = strtok(NULL,";");
+			strcpy(tok,strs[6].c_str());
+			if(tok) remove_all_chars(tok,'\"');
+			//		cout << "snippet " << tok << endl;
+			strncpy(bloco[blocIndex].snippet,tok,1024);
+
+			blocIndex++;
+			if(blocIndex == 3){
+				fwrite(bloco,sizeof(Artigo),sizeof(Artigo)*blocIndex,out);
+				blocIndex = 0;
+			}
 		}
 	}
 	if(blocIndex != 0){
