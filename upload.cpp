@@ -6,9 +6,19 @@
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/classification.hpp>
 #include <vector>
-
+#include <boost/tokenizer.hpp>
+using boost::tokenizer;
+using boost::escaped_list_separator;
+using boost::split;
+using boost::is_any_of;
+using namespace std;
 
 #include "artigo.h"
+//#include "hashing.h"
+
+//TODO hashing file <waldomiro>
+//     primary index file (B-Tree)
+//     secondary index file (B-Tree)
 
 void remove_all_chars(char* str, char c) {
 	char *pr = str, *pw = str;
@@ -19,16 +29,34 @@ void remove_all_chars(char* str, char c) {
 	*pw = '\0';
 }
 
+vector<string> parse(string s){
+	char aux[4096];
+	strcpy(aux,s.c_str());
+	remove_all_chars(aux,'\\');
+	s = aux;
+	typedef tokenizer<escaped_list_separator<char> > so_tokenizer;
+	vector<string> strs;
+	so_tokenizer tok(s, escaped_list_separator<char>('\\', ';', '\"'));
+	for(so_tokenizer::iterator beg=tok.begin(); beg!=tok.end(); ++beg){
+		strs.push_back(*beg);
+	}
+	return strs;
+}
+
+
 int main(int argc, char *argv[]){
-	using namespace std;
-	using namespace boost;
 	ifstream f;
 	FILE *out;
 	string linha,linha_aux;
 	char tok[1024];
-	Artigo bloco[3];
-	int blocIndex = 0;
+	Artigo registro;
+	int count = 0;
 	vector<string> strs;
+	size_t maior_Nome = 0, maior_Titulo = 0, maior_snippet = 0;
+
+	string aux;
+
+	cout << sizeof(Artigo) << endl;
 
 	if(argc != 2){
 		cout << "Modo de uso ./upload <arquivo de entrada>" << endl;
@@ -39,65 +67,60 @@ int main(int argc, char *argv[]){
 	out = fopen("Artigo.dat","w");
 
 	while (getline(f,linha)) {
-		split(strs,linha,is_any_of(";"));
-		
+		strs = parse(linha);
+
 		/*Correção de erro de quebra de linha*/
 		if (strs.size() < 7){
 			getline(f,linha_aux);
 			linha += linha_aux;
-			split(strs,linha,is_any_of(";"));
+			strs = parse(linha);
 		}
-		//tok = strtok(linha,";");
+		
 		strcpy(tok,strs[0].c_str());
-		if(tok) remove_all_chars(tok,'\"');
-		//		cout << "id " << tok << endl;
-		bloco[blocIndex].id = atoi(tok);
+		registro.id = atoi(tok);
 
-		//tok = strtok(NULL,";");
-		strcpy(tok,strs[1].c_str());
-		if(tok) remove_all_chars(tok,'\"');
-		//		cout << "titulo " << tok << endl;
-		strncpy(bloco[blocIndex].titulo,tok,250);
-
-		//tok = strtok(NULL,";");
-		strcpy(tok,strs[2].c_str());
-		if(tok) remove_all_chars(tok,'\"');
-		//		cout << "ano " << tok << endl;
-		bloco[blocIndex].ano = (unsigned short) atoi(tok);
-
-		//tok = strtok(NULL,";");
-		strcpy(tok,strs[3].c_str());
-		if(tok) remove_all_chars(tok,'\"');
-		//		cout << "autores " << tok << endl;
-		strncpy(bloco[blocIndex].autores,tok,50);
-
-		//tok = strtok(NULL,";");
-		strcpy(tok,strs[4].c_str());
-		if(tok) remove_all_chars(tok,'\"');
-		//		cout << "citacoes " << tok << endl;
-		bloco[blocIndex].citacoes = (unsigned short) atoi(tok);
-
-		//tok = strtok(NULL,";");
-		strcpy(tok,strs[5].c_str());
-		if(tok) remove_all_chars(tok,'\"');
-		//		cout << "atualizacao " << tok << endl;
-		strncpy(bloco[blocIndex].atualizacao,tok,20);
-
-		//tok = strtok(NULL,";");
-		strcpy(tok,strs[6].c_str());
-		if(tok) remove_all_chars(tok,'\"');
-		//		cout << "snippet " << tok << endl;
-		strncpy(bloco[blocIndex].snippet,tok,1024);
-
-		blocIndex++;
-		if(blocIndex == 3){
-			fwrite(bloco,sizeof(Artigo),sizeof(Artigo)*blocIndex,out);
-			blocIndex = 0;
+		if (strs[1].size() > maior_Titulo) {
+			maior_Titulo = strs[1].size();
 		}
 
+		strcpy(tok,strs[1].c_str());
+		strncpy(registro.titulo,tok,250);
+
+		strcpy(tok,strs[2].c_str());
+		registro.ano = (unsigned short) atoi(tok);
+
+		if (strs[3].size() > maior_Nome) {
+			maior_Nome = strs[3].size();
+			cout << strs[3] << endl;
+		}
+
+		strcpy(tok,strs[3].c_str());
+		strncpy(registro.autores,tok,50);
+
+		strcpy(tok,strs[4].c_str());
+		registro.citacoes = (unsigned short) atoi(tok);
+
+		strcpy(tok,strs[5].c_str());
+		strncpy(registro.atualizacao,tok,20);
+
+		if (strs[6].size() > maior_snippet) {
+			maior_snippet = strs[6].size();
+			aux = strs[6];
+		}
+
+		strcpy(tok,strs[6].c_str());
+		strncpy(registro.snippet,tok,1024);
+
+		/*Escreve arquivo de dados
+		 * Escreve arquivo de indice primario
+		 * Escreve arquivo de indice secundario*/
+		count++;
 	}
-	if(blocIndex != 0){
-		fwrite(bloco,sizeof(Artigo),sizeof(Artigo)*blocIndex,out);
-	}
+
+	cout << "Tamanho dos resgistros" << aux << endl;
+	cout << "Foram escritos " << count << " blocos!" << endl;
+	cout << "maior nome de autor: " << maior_Nome << endl
+		<< "maior titulo: " << maior_Titulo << endl
+		<< "maior snippet: " << maior_snippet << endl;
 	return 0;
 }
