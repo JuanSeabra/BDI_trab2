@@ -1,11 +1,11 @@
 CC=g++
-CFLAGS=-O3 -lpqxx -lpq -g
-#DEPS =bancoDeDados.h
+CFLAGS=-O3 -g
+DEPS =hashing.h mumurhash.h
 
-%.o: %.cpp # $(DEPS)
+%.o: %.cpp  $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)
 
-upload: upload.o #bancoDeDados.o
+upload: upload.o hashing.o murmurhash.o
 	$(CC) -o $@ $^ $(CFLAGS)
 
 clean: 
