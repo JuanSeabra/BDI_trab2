@@ -14,7 +14,7 @@ using boost::is_any_of;
 using namespace std;
 
 #include "artigo.h"
-//#include "hashing.h"
+#include "hashing.h"
 
 //TODO hashing file <waldomiro>
 //     primary index file (B-Tree)
@@ -50,11 +50,10 @@ int main(int argc, char *argv[]){
 	string linha,linha_aux;
 	char tok[1024];
 	Artigo registro;
-	int count = 0;
+	int count = 0, bucket_count = 0;
 	vector<string> strs;
-	size_t maior_Nome = 0, maior_Titulo = 0, maior_snippet = 0;
+	//HashBuckets hash_registros (out,"overflowFile",100);
 
-	string aux;
 
 	cout << sizeof(Artigo) << endl;
 
@@ -75,52 +74,40 @@ int main(int argc, char *argv[]){
 			linha += linha_aux;
 			strs = parse(linha);
 		}
-		
+
 		strcpy(tok,strs[0].c_str());
 		registro.id = atoi(tok);
 
-		if (strs[1].size() > maior_Titulo) {
-			maior_Titulo = strs[1].size();
-		}
 
 		strcpy(tok,strs[1].c_str());
-		strncpy(registro.titulo,tok,250);
+		strncpy(registro.titulo,tok,300);
 
 		strcpy(tok,strs[2].c_str());
 		registro.ano = (unsigned short) atoi(tok);
 
-		if (strs[3].size() > maior_Nome) {
-			maior_Nome = strs[3].size();
-			cout << strs[3] << endl;
-		}
-
 		strcpy(tok,strs[3].c_str());
-		strncpy(registro.autores,tok,50);
+		strncpy(registro.autores,tok,100);
 
 		strcpy(tok,strs[4].c_str());
 		registro.citacoes = (unsigned short) atoi(tok);
 
 		strcpy(tok,strs[5].c_str());
-		strncpy(registro.atualizacao,tok,20);
+		strncpy(registro.atualizacao,tok,19);
 
-		if (strs[6].size() > maior_snippet) {
-			maior_snippet = strs[6].size();
-			aux = strs[6];
-		}
 
 		strcpy(tok,strs[6].c_str());
-		strncpy(registro.snippet,tok,1024);
+		strncpy(registro.snippet,tok,100);
 
 		/*Escreve arquivo de dados
 		 * Escreve arquivo de indice primario
 		 * Escreve arquivo de indice secundario*/
 		count++;
+		if (count%7 == 0) bucket_count++;
+		strs.clear();
 	}
-
-	cout << "Tamanho dos resgistros" << aux << endl;
-	cout << "Foram escritos " << count << " blocos!" << endl;
-	cout << "maior nome de autor: " << maior_Nome << endl
-		<< "maior titulo: " << maior_Titulo << endl
-		<< "maior snippet: " << maior_snippet << endl;
+	f.close();
+	fclose(out);
+	cout << "Foram escritos " << count << " blocos!" << endl
+		<< "numero de buckets " << bucket_count << endl;
 	return 0;
 }
