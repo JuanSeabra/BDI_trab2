@@ -1,16 +1,32 @@
 #include "hashing.h"
 
-HashBuckets::HashBuckets(FILE *hashFile, FILE *dataFile, FILE *overflowFile, int num_buckets){
-	bucket_ptrs = new int[num_buckets];
+HashBuckets::HashBuckets(char *hashFileName, FILE *dataFile, char *overflowFileName, int num_buckets){
+	hashFile = fopen(hashFileName,"w+");
 	fread(bucket_ptrs,sizeof(int),sizeof(int)*num_buckets,hashFile);
 	this->dataFile = dataFile;
-	this->overflowFile = overflowFile;
+	this->overflowFile = fopen(overflowFileName,"w+");
+	this->num_buckets = num_buckets;
+}
+
+HashBuckets::HashBuckets(FILE *dataFile, char *overflowFileName, int num_buckets){
+	hashFile = fopen("bucketIndexes","w+");
+	bucket_ptrs = new int[num_buckets];
+	this->dataFile = dataFile;
+	this->overflowFile = fopen(overflowFileName,"w+");
 	this->num_buckets = num_buckets;
 	std::fill_n(bucket_ptrs, num_buckets, -1);
 }
 
-int HashBuckets::HashString(char *s){
-	return murmurhash (s, strlen(s),0)%num_buckets;
+HashBuckets::~HashBuckets(){
+	fseek(hashFile,0,SEEK_SET);
+	fwrite(bucket_ptrs,sizeof(int),sizeof(int)*num_buckets,hashFile);
+	fclose(hashFile);
+	fclose(overflowFile);
+	delete bucket_ptrs;
+}
+
+int HashBuckets::HashInt(int s){
+	return s%num_buckets;
 }
 
 Bucket* HashBuckets::criaBucket(){
@@ -20,67 +36,76 @@ Bucket* HashBuckets::criaBucket(){
 	return item;
 }
 
-Overflow* HashBuckets::criaOverflow(Artigo a){
-	Overflow* o = new Overflow;
-	o->item = a;
-	o->ptr_prox = -1;
-	return o;
-}
-
-void HashBuckets::insereBucketEmArquivo(Bucket* bucket_em_memoria){
-	fseek(dataFile,0,SEEK_END);
-	fwrite(bucket_em_memoria,sizeof(Bucket),sizeof(Bucket),dataFile);
-}
-
-void HashBuckets::insereRegistroEmOverflow(Artigo registro){
-	Overflow *registro_overflow = criaOverflow(registro);
-	fseek(overflowFile,0,SEEK_END);
-	fwrite(registro_overflow,sizeof(Overflow),sizeof(Overflow),overflowFile);
-	delete registro_overflow;
-}
-
-int HashBuckets::insereRegistroEmBucket(Artigo registro, Bucket *bucket_em_memoria){
-	Overflow *registro_overflow;
-	int ptr_lista_overflow, ptr_anterior;
-	if(bucket_em_memoria->num_registros_ocupados < 3){
-		bucket_em_memoria->bloco[bucket_em_memoria->num_registros_ocupados] = registro;
-		bucket_em_memoria->num_registros_ocupados++;
-		return 0;
-	}
-	if(bucket_em_memoria->ptr_arquivo_de_overflow != -1){
-		bucket_em_memoria->ptr_arquivo_de_overflow = ftell(overflowFile);
-		insereRegistroEmOverflow(registro);
-	}
-	ptr_lista_overflow = bucket_em_memoria->ptr_arquivo_de_overflow;
-	while(ptr_lista_overflow != -1){
-		fread(registro_overflow,sizeof(Overflow),sizeof(Overflow),overflowFile);
-		ptr_anterior = ptr_lista_overflow;
-		ptr_lista_overflow = registro_overflow->ptr_prox;
-	}
-
-	fseek(overflowFile,0,SEEK_END);
-	registro_overflow->ptr_prox = ftell(overflowFile);
-	fseek(overflowFile,ptr_anterior,SEEK_SET);
-	fwrite(registro_overflow,sizeof(Overflow),sizeof(Overflow),overflowFile);
-	insereRegistroEmOverflow(registro);
-	return 1;
+Overflow* HashBuckets::criaOverflow(){
+	Overflow *item = new Overflow;
+	item->num_registros_ocupados = 0;
+	item->ptr_prox = -1;
+	return item;
 }
 
 int HashBuckets::insert(Artigo registro){
-	int bucket_index = HashString(registro.titulo);
+	int bucket_index = HashInt(registro.id);
+	int ptr_overflow_lido, ptr_overflow_anterior;
 	Bucket *bucket_em_memoria;
-	int status_overflow = 0;
+	Overflow *overflow_em_memoria;
 
-	//se local está vazio
-	if (bucket_ptrs[bucket_index] == -1) {
-		bucket_em_memoria = criaBucket();
+	if(bucket_ptrs[bucket_index] == -1){
+		fseek(dataFile,0,SEEK_END);
 		bucket_ptrs[bucket_index] = ftell(dataFile);
-	} else {
-		fseek(dataFile,bucket_ptrs[bucket_index],SEEK_SET);
-		fread(bucket_em_memoria,sizeof(Bucket),sizeof(Bucket),dataFile);
+		bucket_em_memoria = criaBucket();
+		bucket_em_memoria->bloco[0] = registro;
+		bucket_em_memoria->num_registros_ocupados++;
+		fwrite(bucket_em_memoria,sizeof(Bucket),sizeof(Bucket),dataFile);
+		delete bucket_em_memoria;
+		return 0;
 	}
-	status_overflow = insereRegistroEmBucket(registro, bucket_em_memoria);
-	insereBucketEmArquivo(bucket_em_memoria);
-	delete bucket_em_memoria;
-	return status_overflow;
+
+	fseek(dataFile,bucket_ptrs[bucket_index],SEEK_SET);
+	fread(bucket_em_memoria,sizeof(Bucket),sizeof(Bucket),dataFile);
+	if(bucket_em_memoria->num_registros_ocupados < 7){
+		bucket_em_memoria->bloco[bucket_em_memoria->num_registros_ocupados] = registro;
+		bucket_em_memoria->num_registros_ocupados++;
+		fseek(dataFile,bucket_ptrs[bucket_index],SEEK_SET);
+		fwrite(bucket_em_memoria,sizeof(Bucket),sizeof(Bucket),dataFile);
+		delete bucket_em_memoria;
+		return 0;
+	}
+	if(bucket_em_memoria->ptr_arquivo_de_overflow == -1){
+		fseek(overflowFile,0,SEEK_END);
+		bucket_em_memoria->ptr_arquivo_de_overflow = ftell(overflowFile);
+		fseek(dataFile,bucket_ptrs[bucket_index],SEEK_SET);
+		fwrite(bucket_em_memoria,sizeof(Bucket),sizeof(Bucket),dataFile);
+		overflow_em_memoria = criaOverflow();
+		overflow_em_memoria->bloco[0] = registro;
+		overflow_em_memoria->num_registros_ocupados++;
+		fwrite(overflow_em_memoria,sizeof(Overflow),sizeof(Overflow),overflowFile);
+		delete bucket_em_memoria;
+		delete overflow_em_memoria;
+		return 1;
+	}
+	ptr_overflow_lido = bucket_em_memoria->ptr_arquivo_de_overflow;
+	while (ptr_overflow_lido != -1) {
+		fseek(overflowFile,ptr_overflow_lido,SEEK_SET);
+		fread(overflow_em_memoria,sizeof(Overflow),sizeof(Overflow),overflowFile);
+		if(overflow_em_memoria->num_registros_ocupados < 7){
+			overflow_em_memoria->bloco[overflow_em_memoria->num_registros_ocupados] = registro;
+			overflow_em_memoria->num_registros_ocupados++;
+			fwrite(overflow_em_memoria,sizeof(Overflow),sizeof(Overflow),overflowFile);
+			delete overflow_em_memoria;
+			return 1;
+		}
+		ptr_overflow_anterior = ptr_overflow_lido;
+		ptr_overflow_lido = overflow_em_memoria->ptr_prox;
+		delete overflow_em_memoria;
+	}
+	fseek(overflowFile,ptr_overflow_anterior,SEEK_SET);
+	fread(overflow_em_memoria,sizeof(Overflow),sizeof(Overflow),overflowFile);
+	fseek(overflowFile,0,SEEK_END);
+	overflow_em_memoria->ptr_prox = ftell(overflowFile);
+	overflow_em_memoria = criaOverflow();
+	overflow_em_memoria->bloco[0] = registro;
+	overflow_em_memoria->num_registros_ocupados++;
+	fwrite(overflow_em_memoria,sizeof(Overflow),sizeof(Overflow),overflowFile);
+	delete overflow_em_memoria;
+	return 1;
 }
