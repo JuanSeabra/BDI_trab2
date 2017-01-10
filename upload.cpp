@@ -22,6 +22,11 @@ using namespace std;
 //     primary index file (B-Tree)
 //     secondary index file (B-Tree)
 
+typedef struct {
+	Artigo bloco[7];
+	int valores_no_bloco;
+} Bloco;
+
 vector<string> parse(string s){
 	erase_all(s,"\\");
 	typedef tokenizer<escaped_list_separator<char> > so_tokenizer;
@@ -42,8 +47,8 @@ int main(int argc, char *argv[]){
 	Artigo registro;
 	int count = 0, bucket_count = 0;
 	vector<string> strs;
-	Artigo bloco[7];
-	int valores_no_bloco = 0;
+	Bloco block;
+	block.valores_no_bloco = 0;
 
 
 	cout << sizeof(Artigo) << endl;
@@ -92,19 +97,19 @@ int main(int argc, char *argv[]){
 		if (count%7 == 0) bucket_count++;
 		strs.clear();
 
-		bloco[valores_no_bloco] = registro;
-		valores_no_bloco++;
+		block.bloco[block.valores_no_bloco] = registro;
+		block.valores_no_bloco++;
 
-		if(valores_no_bloco == 7) {
-			fwrite(bloco,sizeof(Artigo),valores_no_bloco,out_ordenado);
-			valores_no_bloco = 0;
+		if(block.valores_no_bloco == 7) {
+			fwrite(&block,sizeof(Bloco),1,out_ordenado);
+			block.valores_no_bloco = 0;
 		}
 
 		hash_registros.insert(registro);
 //		cout << "inseridos " << count << " registros até'agora!!" << endl;
 	}
-	if(valores_no_bloco > 0){
-		fwrite(bloco,sizeof(Artigo),valores_no_bloco,out_ordenado);
+	if(block.valores_no_bloco > 0){
+		fwrite(&block,sizeof(Bloco),1,out_ordenado);
 	}
 
 	f.close();
