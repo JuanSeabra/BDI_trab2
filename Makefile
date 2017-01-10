@@ -1,5 +1,5 @@
 CC=g++
-CFLAGS=-O0 -g
+CFLAGS=-O3 -g
 DEPS =hashing.h
 
 %.o: %.cpp  $(DEPS)

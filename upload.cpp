@@ -37,10 +37,13 @@ vector<string> parse(string s){
 int main(int argc, char *argv[]){
 	ifstream f;
 	FILE *out;
+	FILE *out_ordenado;
 	string linha,linha_aux;
 	Artigo registro;
 	int count = 0, bucket_count = 0;
 	vector<string> strs;
+	Artigo bloco[7];
+	int valores_no_bloco = 0;
 
 
 	cout << sizeof(Artigo) << endl;
@@ -52,6 +55,7 @@ int main(int argc, char *argv[]){
 
 	f.open(argv[1]);
 	out = fopen("Artigo.dat","w+");
+	out_ordenado = fopen("Artigo_ordenado.dat", "w");
 
 	HashBuckets hash_registros (out,"overflowFile",145920);
 
@@ -87,12 +91,26 @@ int main(int argc, char *argv[]){
 		count++;
 		if (count%7 == 0) bucket_count++;
 		strs.clear();
+
+		bloco[valores_no_bloco] = registro;
+		valores_no_bloco++;
+
+		if(valores_no_bloco == 7) {
+			fwrite(bloco,sizeof(Artigo),valores_no_bloco,out_ordenado);
+			valores_no_bloco = 0;
+		}
+
 		hash_registros.insert(registro);
-		cout << "inseridos " << count << " registros até'agora!!" << endl;
+//		cout << "inseridos " << count << " registros até'agora!!" << endl;
 	}
+	if(valores_no_bloco > 0){
+		fwrite(bloco,sizeof(Artigo),valores_no_bloco,out_ordenado);
+	}
+
 	f.close();
 	fclose(out);
+	fclose(out_ordenado);
 	cout << "Foram escritos " << count << " registros!" << endl
-		<< "numero de buckets " << bucket_count << endl;
+		<< "numero de buckets " << bucket_count+1 << endl;
 	return 0;
 }

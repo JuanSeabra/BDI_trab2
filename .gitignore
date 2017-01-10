@@ -1,3 +1,5 @@
 *.o
 *.dat
 upload
+overflowFile
+bucketIndexes
