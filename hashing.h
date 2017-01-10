@@ -36,6 +36,7 @@ class HashBuckets {
 		FILE *dataFile, *overflowFile, *hashFile;
 		int *bucket_ptrs; //-1 = NULL, qualquer outro valor = endereço do bucket
 		int num_buckets;
+		int num_bucketsTotais;
 
 		Bucket* criaBucket();
 		Overflow* criaOverflow();

@@ -1,20 +1,23 @@
 #include "hashing.h"
+#include <iostream>
 
-HashBuckets::HashBuckets(char *hashFileName, FILE *dataFile, char *overflowFileName, int num_buckets){
+HashBuckets::HashBuckets(char *hashFileName, FILE *dataFile, char *overflowFileName, int num_bucketsTotais){
 	hashFile = fopen(hashFileName,"w+");
-	fread(bucket_ptrs,sizeof(int),sizeof(int)*num_buckets,hashFile);
+	fread(bucket_ptrs,sizeof(int),sizeof(int)*num_bucketsTotais,hashFile);
+	this->num_bucketsTotais = num_bucketsTotais;
 	this->dataFile = dataFile;
 	this->overflowFile = fopen(overflowFileName,"w+");
-	this->num_buckets = num_buckets;
+	this->num_buckets = 0;
 }
 
-HashBuckets::HashBuckets(FILE *dataFile, char *overflowFileName, int num_buckets){
+HashBuckets::HashBuckets(FILE *dataFile, char *overflowFileName, int num_bucketsTotais){
 	hashFile = fopen("bucketIndexes","w+");
-	bucket_ptrs = new int[num_buckets];
+	bucket_ptrs = new int[num_bucketsTotais];
+	this->num_bucketsTotais = num_bucketsTotais;
 	this->dataFile = dataFile;
 	this->overflowFile = fopen(overflowFileName,"w+");
-	this->num_buckets = num_buckets;
-	std::fill_n(bucket_ptrs, num_buckets, -1);
+	this->num_buckets = 0;
+	std::fill_n(bucket_ptrs, num_bucketsTotais, -1);
 }
 
 HashBuckets::~HashBuckets(){
@@ -22,11 +25,11 @@ HashBuckets::~HashBuckets(){
 	fwrite(bucket_ptrs,sizeof(int),sizeof(int)*num_buckets,hashFile);
 	fclose(hashFile);
 	fclose(overflowFile);
-	delete bucket_ptrs;
+	//delete bucket_ptrs;
 }
 
 int HashBuckets::HashInt(int s){
-	return s%num_buckets;
+	return s%num_bucketsTotais;
 }
 
 Bucket* HashBuckets::criaBucket(){
@@ -56,10 +59,11 @@ int HashBuckets::insert(Artigo registro){
 		bucket_em_memoria->bloco[0] = registro;
 		bucket_em_memoria->num_registros_ocupados++;
 		fwrite(bucket_em_memoria,sizeof(Bucket),sizeof(Bucket),dataFile);
+		num_buckets++;
+		std::cout << "teste[1]" << std::endl;
 		delete bucket_em_memoria;
 		return 0;
 	}
-
 	fseek(dataFile,bucket_ptrs[bucket_index],SEEK_SET);
 	fread(bucket_em_memoria,sizeof(Bucket),sizeof(Bucket),dataFile);
 	if(bucket_em_memoria->num_registros_ocupados < 7){
@@ -67,7 +71,9 @@ int HashBuckets::insert(Artigo registro){
 		bucket_em_memoria->num_registros_ocupados++;
 		fseek(dataFile,bucket_ptrs[bucket_index],SEEK_SET);
 		fwrite(bucket_em_memoria,sizeof(Bucket),sizeof(Bucket),dataFile);
-		delete bucket_em_memoria;
+		num_buckets++;
+		std::cout << "teste[2]" << std::endl;
+		//delete bucket_em_memoria;
 		return 0;
 	}
 	if(bucket_em_memoria->ptr_arquivo_de_overflow == -1){
@@ -79,8 +85,10 @@ int HashBuckets::insert(Artigo registro){
 		overflow_em_memoria->bloco[0] = registro;
 		overflow_em_memoria->num_registros_ocupados++;
 		fwrite(overflow_em_memoria,sizeof(Overflow),sizeof(Overflow),overflowFile);
-		delete bucket_em_memoria;
-		delete overflow_em_memoria;
+		num_buckets++;
+		std::cout << "teste[3]" << std::endl;
+		//delete bucket_em_memoria;
+		//delete overflow_em_memoria;
 		return 1;
 	}
 	ptr_overflow_lido = bucket_em_memoria->ptr_arquivo_de_overflow;
@@ -91,12 +99,14 @@ int HashBuckets::insert(Artigo registro){
 			overflow_em_memoria->bloco[overflow_em_memoria->num_registros_ocupados] = registro;
 			overflow_em_memoria->num_registros_ocupados++;
 			fwrite(overflow_em_memoria,sizeof(Overflow),sizeof(Overflow),overflowFile);
-			delete overflow_em_memoria;
+			num_buckets++;
+			std::cout << "teste[4]" << std::endl;
+			//delete overflow_em_memoria;
 			return 1;
 		}
 		ptr_overflow_anterior = ptr_overflow_lido;
 		ptr_overflow_lido = overflow_em_memoria->ptr_prox;
-		delete overflow_em_memoria;
+		//delete overflow_em_memoria;
 	}
 	fseek(overflowFile,ptr_overflow_anterior,SEEK_SET);
 	fread(overflow_em_memoria,sizeof(Overflow),sizeof(Overflow),overflowFile);
@@ -106,6 +116,8 @@ int HashBuckets::insert(Artigo registro){
 	overflow_em_memoria->bloco[0] = registro;
 	overflow_em_memoria->num_registros_ocupados++;
 	fwrite(overflow_em_memoria,sizeof(Overflow),sizeof(Overflow),overflowFile);
-	delete overflow_em_memoria;
+	num_buckets++;
+	std::cout << "teste[5]" << std::endl;
+	//delete overflow_em_memoria;
 	return 1;
 }
