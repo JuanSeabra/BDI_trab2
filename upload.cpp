@@ -38,6 +38,10 @@ vector<string> parse(string s){
 	return strs;
 }
 
+void criaIndicePrimario(FILE &out_ordenado, BTTablePrimClass& btree) {
+
+}
+
 
 int main(int argc, char *argv[]){
 	ifstream f;
@@ -49,7 +53,7 @@ int main(int argc, char *argv[]){
 	vector<string> strs;
 	Bloco block;
 	block.valores_no_bloco = 0;
-
+	BTTablePrimClass btreePrim('w', "indicePrimario.dat");
 
 	cout << sizeof(Artigo) << endl;
 
