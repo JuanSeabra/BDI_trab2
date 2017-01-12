@@ -137,15 +137,18 @@ int main(int argc, char *argv[]){
 
 	cout << "Indice primario criado!" << endl;
 
+	cout << "Tamanho do nos: " << btreePrim.tamNo << endl;
+	cout << "Numero de itens: " << btreePrim.numItens << endl;
+	cout << "Numero de nos: " << btreePrim.numNos << endl;
 	cout << "Teste: busca chave" << endl;
 	TipoIndicePrim itemBuscado;
-	if (btreePrim.recuperar(1000, itemBuscado)) {
+	/*if (btreePrim.recuperar(14325, itemBuscado)) {
 		cout << "Chave: " << itemBuscado.id << " Local: " << itemBuscado.pontBucket << endl;
 	}
 	else {
 		cout << "Nao encontrado!" << endl;
 		cout << "Chave: " << itemBuscado.id << " Local: " << itemBuscado.pontBucket << endl;
-	}
+	}*/
 
 	fclose(out);
 	fclose(out_ordenado);

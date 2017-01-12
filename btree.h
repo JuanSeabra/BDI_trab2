@@ -20,7 +20,6 @@ public:
 	bool inserir(const TipoIndicePrim &item);
 	bool recuperar(int chave, TipoIndicePrim &item);
 
-private:
 	bool procuraNo(const int buscado, int &local) const;
 	void addItem(const TipoIndicePrim &novoItem, int direitaNova,
 	 TipoNoPrim &no, int local);

@@ -18,41 +18,44 @@ BTTablePrimClass::BTTablePrimClass(char modo, char* nomeArquivo) {
 	//modo de leitura
 	if (modo == 'r') {
 		arquivo.open(nomeArquivo, ios::in | ios::binary);
-		if (arquivo.fail()) 
-			cout << "Erro ao abrir o arquivo" << endl;
-
-		else {
-			arquivo.read(reinterpret_cast <char *> (&noAtual), tamNo);
-			if (arquivo.fail()) {
-				//se nao eh possivel ler deste arquivo a B tree esta vazia
-				numItens = 0;
-				numNos = 0;
-				raiz = pontNull;
-			}
-			else { //o no 0 contem dados - cabecalho da arvore
-				numItens = noAtual.ponteiros[0];
-				numNos = noAtual.ponteiros[1];
-				raiz = noAtual.ponteiros[2];
-			}
+		if (arquivo.fail()) {
+			cerr << "Erro ao abrir o arquivo" << endl;
+			exit(1);
+		}
+		
+		arquivo.read(reinterpret_cast <char *> (&noAtual), tamNo);
+		if (arquivo.fail()) {
+			//se nao eh possivel ler deste arquivo a B tree esta vazia
+			numItens = 0;
+			numNos = 0;
+			raiz = pontNull;
+		}
+		else { //o no 0 contem dados - cabecalho da arvore
+			numItens = noAtual.ponteiros[0];
+			numNos = noAtual.ponteiros[1];
+			raiz = noAtual.ponteiros[2];
 		}
 	}
+
 	//modo de escrita
 	else if (modo == 'w') {
 		arquivo.open(nomeArquivo, ios::in | ios::out | ios::trunc | ios::binary);
-		if (arquivo.fail()) 
-			cout << "Erro ao abrir o arquivo" << endl;
-
-		else {
-			raiz = pontNull;
-			numItens = 0;
-			numNos = 0;
-			noAtual.ponteiros[0] = numItens;
-			noAtual.ponteiros[1] = numNos;
-			noAtual.ponteiros[2] = raiz;
-
-			arquivo.seekp(0, ios::beg);
-			arquivo.write(reinterpret_cast <char*> (&noAtual), tamNo);
+		if (arquivo.fail()) {
+			cerr << "Erro ao abrir o arquivo" << endl;
+			exit(1);
 		}
+
+		
+		raiz = pontNull;
+		numItens = 0;
+		numNos = 0;
+		noAtual.ponteiros[0] = numItens;
+		noAtual.ponteiros[1] = numNos;
+		noAtual.ponteiros[2] = raiz;
+
+		arquivo.seekp(0, ios::beg);
+		arquivo.write(reinterpret_cast <char*> (&noAtual), tamNo);
+		
 	}
 }
 
@@ -85,7 +88,7 @@ bool BTTablePrimClass::procuraNo(const int buscado, int &local) const {
 	if (buscado < noAtual.chave[0].id)
 		local = -1;
 	else {
-		local = noAtual.qtd-1;
+		local = noAtual.qtd - 1;
 		while( (buscado < noAtual.chave[local].id) && (local > 0))
 			local--;
 
@@ -149,7 +152,7 @@ void BTTablePrimClass::split(const TipoIndicePrim &itemAtual, int direitaAtual,
 	numNos++;
 	direitaNova = numNos;
 	arquivo.seekp(direitaNova * tamNo, ios::beg);
-	arquivo.write(reinterpret_cast<char*> (&noAtual), tamNo);
+	arquivo.write(reinterpret_cast<char*> (&noDireita), tamNo);
 }
 
 //adiciona um item a tabela
@@ -162,6 +165,7 @@ void BTTablePrimClass::coloca(const TipoIndicePrim &itemAtual, int raizAtual,
 		moveAcima = true;
 		novoItem = itemAtual;
 		direitaNova = pontNull;
+
 	}
 
 	//passo recursivo
@@ -170,26 +174,28 @@ void BTTablePrimClass::coloca(const TipoIndicePrim &itemAtual, int raizAtual,
 		arquivo.read(reinterpret_cast<char*> (&noAtual), tamNo);
 
 		if(procuraNo(itemAtual.id, local)) {
-			cout << "Valor ja existe na arvore B!" << endl;
+			cerr << "Valor ja existe na arvore B!" << endl;
+			moveAcima = false;
+			exit(1);
 		}
-		else {
-			coloca(itemAtual, noAtual.ponteiros[local+1], moveAcima, novoItem, direitaNova);
-			if (moveAcima) {
-				arquivo.seekg(raizAtual*tamNo, ios::beg);
-				arquivo.read(reinterpret_cast<char*> (&noAtual), tamNo);
+		
+		coloca(itemAtual, noAtual.ponteiros[local+1], moveAcima, novoItem, direitaNova);
+		if (moveAcima) {
+			arquivo.seekg(raizAtual*tamNo, ios::beg);
+			arquivo.read(reinterpret_cast<char*> (&noAtual), tamNo);
 
-				if (noAtual.qtd < maxChaves) {
-					moveAcima = false;
-					addItem(novoItem, direitaNova, noAtual, local+1);
-					arquivo.seekp(raizAtual*tamNo, ios::beg);
-					arquivo.write(reinterpret_cast<char*> (&noAtual), tamNo);
-				}
-				else {
-					moveAcima = true;
-					split(novoItem, direitaNova, raizAtual, local, novoItem, direitaNova);
-				}
+			if (noAtual.qtd < maxChaves) {
+				moveAcima = false;
+				addItem(novoItem, direitaNova, noAtual, local+1);
+				arquivo.seekp(raizAtual*tamNo, ios::beg);
+				arquivo.write(reinterpret_cast<char*> (&noAtual), tamNo);
+			}
+			else {
+				moveAcima = true;
+				split(novoItem, direitaNova, raizAtual, local, novoItem, direitaNova);
 			}
 		}
+		
 	}
 }
 
@@ -230,6 +236,7 @@ bool BTTablePrimClass::recuperar(int chave, TipoIndicePrim &item) {
 		arquivo.seekg(raizAtual*tamNo, ios::beg);
 		arquivo.read(reinterpret_cast<char*> (&noAtual), tamNo);
 
+		cout << raizAtual << endl;
 		if (procuraNo(chave, local)) {
 			achou = true;
 			item = noAtual.chave[local];

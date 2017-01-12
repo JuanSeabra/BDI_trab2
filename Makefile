@@ -1,5 +1,5 @@
 CC=g++
-CFLAGS=-O3 -g
+CFLAGS=-O3 -g -std=c++14
 DEPS =hashing.h btree.h
 
 %.o: %.cpp  $(DEPS)
