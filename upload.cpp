@@ -42,7 +42,7 @@ vector<string> parse(string s){
 }
 
 //Cria o arquivo de indice primario com arvore B
-void criaIndicePrimario(HashBuckets hash_registros, BTTablePrimClass& btree) {
+void criaIndicePrimario(HashBuckets& hash_registros, BTTablePrimClass& btree) {
 	TipoIndicePrim itemIndice;
 
 	for (int i = 0; i < NUM_BUCKETS; i++) {
@@ -134,6 +134,8 @@ int main(int argc, char *argv[]){
 	cout << "Arquivo ordenado em hashing criado" << endl;
 
 	criaIndicePrimario(hash_registros, btreePrim);
+
+	cout << "TESTANDOOOOOO!!!!!" << endl;
 
 	fclose(out);
 	fclose(out_ordenado);
