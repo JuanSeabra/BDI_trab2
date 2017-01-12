@@ -1,5 +1,6 @@
 *.o
 *.dat
 upload
+findrec
 overflowFile
 bucketIndexes
