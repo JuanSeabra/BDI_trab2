@@ -135,10 +135,20 @@ int main(int argc, char *argv[]){
 
 	criaIndicePrimario(hash_registros, btreePrim);
 
-	cout << "TESTANDOOOOOO!!!!!" << endl;
+	cout << "Indice primario criado!" << endl;
+
+	cout << "Teste: busca chave" << endl;
+	TipoIndicePrim itemBuscado;
+	if (btreePrim.recuperar(1000, itemBuscado)) {
+		cout << "Chave: " << itemBuscado.id << " Local: " << itemBuscado.pontBucket << endl;
+	}
+	else {
+		cout << "Nao encontrado!" << endl;
+		cout << "Chave: " << itemBuscado.id << " Local: " << itemBuscado.pontBucket << endl;
+	}
 
 	fclose(out);
 	fclose(out_ordenado);
-	
+
 	return 0;
 }
