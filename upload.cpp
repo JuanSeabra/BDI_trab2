@@ -17,6 +17,7 @@ using namespace std;
 
 #include "artigo.h"
 #include "hashing.h"
+#include "btree.h"
 
 //TODO hashing file <waldomiro>
 //     primary index file (B-Tree)
@@ -38,7 +39,9 @@ vector<string> parse(string s){
 	return strs;
 }
 
-void criaIndicePrimario(FILE &out_ordenado, BTTablePrimClass& btree) {
+//Cria o arquivo de indice primario com arvore B
+//o arquivo eh out ou out_ordenado?
+void criaIndicePrimario(FILE* out_ordenado, BTTablePrimClass& btree) {
 
 }
 
@@ -117,9 +120,15 @@ int main(int argc, char *argv[]){
 	}
 
 	f.close();
-	fclose(out);
-	fclose(out_ordenado);
+
 	cout << "Foram escritos " << count << " registros!" << endl
 		<< "numero de buckets " << bucket_count+1 << endl;
+	cout << "Arquivo ordenado em hashing criado" << endl;
+
+	criaIndicePrimario(out_ordenado, btreePrim);
+
+	fclose(out);
+	fclose(out_ordenado);
+	
 	return 0;
 }
