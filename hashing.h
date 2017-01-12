@@ -31,8 +31,9 @@ class HashBuckets {
 		//Inserção
 		//reorna 1 se houve overflow e 0 se não houve
 		int insert(Artigo registro);
+		Artigo* search(int id);
 
-	private:
+//	private:
 		FILE *dataFile, *overflowFile, *hashFile;
 		int *bucket_ptrs; //-1 = NULL, qualquer outro valor = endereço do bucket
 		int num_buckets;
@@ -41,6 +42,7 @@ class HashBuckets {
 		Bucket* criaBucket();
 		Overflow* criaOverflow();
 		int HashInt (int s);
+		Artigo* buscaNoBucket(int id, Bucket *bucket_em_memoria);
 };
 
 #endif

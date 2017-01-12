@@ -1,6 +1,8 @@
 CC=g++
-CFLAGS=-O3 -g
+CFLAGS=-O0 -g
 DEPS =hashing.h
+
+all: upload findrec
 
 %.o: %.cpp  $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)
@@ -8,5 +10,8 @@ DEPS =hashing.h
 upload: upload.o hashing.o
 	$(CC) -o $@ $^ $(CFLAGS)
 
-clean: 
-	rm *.o upload
+findrec: findrec.o hashing.o
+	$(CC) -o $@ $^ $(CFLAGS)
+
+clean:
+	rm *.o upload findrec *.dat overflowFile bucketIndexes

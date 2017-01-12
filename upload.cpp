@@ -22,10 +22,10 @@ using namespace std;
 //     primary index file (B-Tree)
 //     secondary index file (B-Tree)
 
-typedef struct {
-	Artigo bloco[7];
-	int valores_no_bloco;
-} Bloco;
+/*typedef struct {*/
+	//Artigo bloco[7];
+	//int valores_no_bloco;
+/*} Bloco;*/
 
 vector<string> parse(string s){
 	erase_all(s,"\\");
@@ -47,8 +47,9 @@ int main(int argc, char *argv[]){
 	Artigo registro;
 	int count = 0, bucket_count = 0;
 	vector<string> strs;
-	Bloco block;
-	block.valores_no_bloco = 0;
+   /* Bloco block;*/
+	/*block.valores_no_bloco = 0;*/
+	int overflow = 0;
 
 
 	cout << sizeof(Artigo) << endl;
@@ -62,7 +63,14 @@ int main(int argc, char *argv[]){
 	out = fopen("Artigo.dat","w+");
 	out_ordenado = fopen("Artigo_ordenado.dat", "w");
 
-	HashBuckets hash_registros (out,"overflowFile",145920);
+	//0% 145920 - 88427 overflows
+	//100% 291840 - 0 overflows
+	//50% 218880 - 0 overflows
+	//25% 182400 - 12892 overflows
+	//37,5% 200640 - 3948 overflows
+	//43% 208666 - 1234 overflows
+	//valor de folga escolhido 50%
+	HashBuckets hash_registros (out,"overflowFile",218880);
 
 	while (getline(f,linha)) {
 		strs = parse(linha);
@@ -97,25 +105,25 @@ int main(int argc, char *argv[]){
 		if (count%7 == 0) bucket_count++;
 		strs.clear();
 
-		block.bloco[block.valores_no_bloco] = registro;
-		block.valores_no_bloco++;
+		//block.bloco[block.valores_no_bloco] = registro;
+		//block.valores_no_bloco++;
 
-		if(block.valores_no_bloco == 7) {
-			fwrite(&block,sizeof(Bloco),1,out_ordenado);
-			block.valores_no_bloco = 0;
-		}
+		//if(block.valores_no_bloco == 7) {
+			//fwrite(&block,sizeof(Bloco),1,out_ordenado);
+			//block.valores_no_bloco = 0;
+		/*}*/
 
-		hash_registros.insert(registro);
+		overflow += hash_registros.insert(registro);
 //		cout << "inseridos " << count << " registros até'agora!!" << endl;
 	}
-	if(block.valores_no_bloco > 0){
-		fwrite(&block,sizeof(Bloco),1,out_ordenado);
-	}
+   /* if(block.valores_no_bloco > 0){*/
+		//fwrite(&block,sizeof(Bloco),1,out_ordenado);
+	//}
 
 	f.close();
 	fclose(out);
 	fclose(out_ordenado);
 	cout << "Foram escritos " << count << " registros!" << endl
-		<< "numero de buckets " << bucket_count+1 << endl;
+		<< "houveram " << overflow  << " overflows!"<< endl;
 	return 0;
 }
