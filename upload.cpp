@@ -19,9 +19,11 @@ using namespace std;
 #include "hashing.h"
 #include "btree.h"
 
+#define NUM_BUCKETS 145920
+
 //TODO hashing file <waldomiro>
-//     primary index file (B-Tree)
-//     secondary index file (B-Tree)
+//     primary index file (B-Tree) <victoria>
+//     secondary index file (B-Tree) <victoria e waldomiro>
 
 typedef struct {
 	Artigo bloco[7];
@@ -40,9 +42,15 @@ vector<string> parse(string s){
 }
 
 //Cria o arquivo de indice primario com arvore B
-//o arquivo eh out ou out_ordenado?
-void criaIndicePrimario(FILE* out_ordenado, BTTablePrimClass& btree) {
+void criaIndicePrimario(HashBuckets hash_registros, BTTablePrimClass& btree) {
+	TipoIndicePrim itemIndice;
 
+	for (int i = 0; i < NUM_BUCKETS; i++) {
+		itemIndice.id = i;
+		itemIndice.pontBucket = hash_registros.bucket_ptrs[i];
+
+		btree.inserir(itemIndice);
+	}
 }
 
 
@@ -69,7 +77,7 @@ int main(int argc, char *argv[]){
 	out = fopen("Artigo.dat","w+");
 	out_ordenado = fopen("Artigo_ordenado.dat", "w");
 
-	HashBuckets hash_registros (out,"overflowFile",145920);
+	HashBuckets hash_registros (out,"overflowFile",NUM_BUCKETS);
 
 	while (getline(f,linha)) {
 		strs = parse(linha);
@@ -125,7 +133,7 @@ int main(int argc, char *argv[]){
 		<< "numero de buckets " << bucket_count+1 << endl;
 	cout << "Arquivo ordenado em hashing criado" << endl;
 
-	criaIndicePrimario(out_ordenado, btreePrim);
+	criaIndicePrimario(hash_registros, btreePrim);
 
 	fclose(out);
 	fclose(out_ordenado);

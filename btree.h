@@ -27,7 +27,7 @@ private:
 	void split(const TipoIndicePrim &itemAtual, int direitaAtual,
 		int raizAtual, int local, TipoIndicePrim &novoItem, 
 		int &direitaNova);
-	void abaixa(const TipoIndicePrim &itemAtual, int raizAtual,
+	void coloca(const TipoIndicePrim &itemAtual, int raizAtual,
          bool &moveAcima, TipoIndicePrim &novoItem, int &direitaNova);
 	int raiz;   // ponteiro para a raiz
 	int numNos; // numero de nos na B-tree

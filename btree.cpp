@@ -153,7 +153,7 @@ void BTTablePrimClass::split(const TipoIndicePrim &itemAtual, int direitaAtual,
 }
 
 //adiciona um item a tabela
-void BTTablePrimClass::abaixa(const TipoIndicePrim &itemAtual, int raizAtual,
+void BTTablePrimClass::coloca(const TipoIndicePrim &itemAtual, int raizAtual,
          bool &moveAcima, TipoIndicePrim &novoItem, int &direitaNova) {
 	int local;
 
@@ -173,7 +173,7 @@ void BTTablePrimClass::abaixa(const TipoIndicePrim &itemAtual, int raizAtual,
 			cout << "Valor ja existe na arvore B!" << endl;
 		}
 		else {
-			abaixa(itemAtual, noAtual.ponteiros[local+1], moveAcima, novoItem, direitaNova);
+			coloca(itemAtual, noAtual.ponteiros[local+1], moveAcima, novoItem, direitaNova);
 			if (moveAcima) {
 				arquivo.seekg(raizAtual*tamNo, ios::beg);
 				arquivo.read(reinterpret_cast<char*> (&noAtual), tamNo);
@@ -199,7 +199,7 @@ bool BTTablePrimClass::inserir(const TipoIndicePrim &item) {
 	int direitaNova;
 	TipoIndicePrim novoItem;
 
-	abaixa(item, raiz, moveAcima, novoItem, direitaNova);
+	coloca(item, raiz, moveAcima, novoItem, direitaNova);
 
 	//cria uma nova raiz
 	if (moveAcima) {

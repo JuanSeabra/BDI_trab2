@@ -32,7 +32,6 @@ class HashBuckets {
 		//reorna 1 se houve overflow e 0 se não houve
 		int insert(Artigo registro);
 
-	private:
 		FILE *dataFile, *overflowFile, *hashFile;
 		int *bucket_ptrs; //-1 = NULL, qualquer outro valor = endereço do bucket
 		int num_buckets;
