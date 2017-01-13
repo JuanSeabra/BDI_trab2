@@ -142,13 +142,13 @@ int main(int argc, char *argv[]){
 	cout << "Numero de nos: " << btreePrim.numNos << endl;
 	cout << "Teste: busca chave" << endl;
 	TipoIndicePrim itemBuscado;
-	/*if (btreePrim.recuperar(14325, itemBuscado)) {
+	if (btreePrim.recuperar(145919, itemBuscado)) {
 		cout << "Chave: " << itemBuscado.id << " Local: " << itemBuscado.pontBucket << endl;
 	}
 	else {
 		cout << "Nao encontrado!" << endl;
 		cout << "Chave: " << itemBuscado.id << " Local: " << itemBuscado.pontBucket << endl;
-	}*/
+	}
 
 	fclose(out);
 	fclose(out_ordenado);

@@ -3,7 +3,7 @@
 
 using namespace std;
 
-const int tamTitulo = 100;
+const int tamTitulo = 300;
 
 typedef struct {
 	int id;

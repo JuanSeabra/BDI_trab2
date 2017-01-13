@@ -84,14 +84,17 @@ bool BTTablePrimClass::vazio(void) const {
 //Verifica se um no esta na arvore B
 bool BTTablePrimClass::procuraNo(const int buscado, int &local) const {
 	bool achou = false;
-
+	
+	//cout << "Quantidade de chaves do no: " << noAtual.qtd << endl;
 	if (buscado < noAtual.chave[0].id)
 		local = -1;
 	else {
 		local = noAtual.qtd - 1;
-		while( (buscado < noAtual.chave[local].id) && (local > 0))
+		while( (buscado < noAtual.chave[local].id) && (local > 0)) {
+			cout << " " << noAtual.chave[local].id;
 			local--;
-
+		}
+		cout << endl;
 		if (buscado == noAtual.chave[local].id)
 			achou = true;
 	}
