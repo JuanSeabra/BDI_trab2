@@ -17,7 +17,9 @@ using namespace std;
 
 #include "artigo.h"
 #include "hashing.h"
-#include "btree.h"
+#include "btree_prim.h"
+#include "btree_sec.h"
+#include "auxiliar.h"
 
 #define NUM_BUCKETS 145920
 
@@ -53,11 +55,52 @@ void criaIndicePrimario(HashBuckets& hash_registros, BTTablePrimClass& btree) {
 	}
 }
 
+void criaIndiceSecundario(HashBuckets& hash_registros, BTTableSecClass& btree ) {
+	TipoIndiceSec itemSec;
+	int bucket_endereco;
+	Bucket *bucket_em_memoria = new Bucket;
+	Artigo art;
+	Auxiliar blocosAuxiliares ("blocoAux");
+
+	for (int i = 0; i < NUM_BUCKETS; i++) {
+		bucket_endereco = hash_registros.bucket_ptrs[i];
+		fread(bucket_em_memoria,sizeof(Bucket),1,hash_registros.dataFile);
+		for(int j = 0; j < bucket_em_memoria->num_registros_ocupados; j++) {
+			art = bucket_em_memoria->bloco[j];
+			BlocoAuxiliar blocoAux;
+
+			if (btree.recuperar(art.titulo, itemSec)) {
+				//cout << "Titulo do cao: " << art.titulo << endl;
+				//cout << "Titulo do cao encontrado: " << itemSec.titulo << endl;
+				//cout << "Posicao do cao: " << itemSec.pontBloco << endl;
+
+				int endBloco = itemSec.pontBloco;
+				blocoAux = blocosAuxiliares.recuperar(endBloco);
+				int pos = blocoAux.cont;
+
+				blocoAux.pontBucket[pos] = bucket_endereco;
+				blocoAux.posBucket[pos] = j;
+				blocosAuxiliares.atualizar(endBloco, blocoAux);
+			}
+			else {
+				blocoAux.pontBucket[0] = bucket_endereco;
+				blocoAux.posBucket[0] = j;
+				int endBloco = blocosAuxiliares.inserir(blocoAux);
+
+				strcpy(itemSec.titulo, art.titulo);
+				itemSec.pontBloco = endBloco;
+				btree.inserir(itemSec);
+			}
+		}
+	}
+
+	delete bucket_em_memoria;
+}
+
 
 int main(int argc, char *argv[]){
 	ifstream f;
 	FILE *out;
-	FILE *out_ordenado;
 	string linha,linha_aux;
 	Artigo registro;
 	int count = 0, bucket_count = 0;
@@ -65,6 +108,7 @@ int main(int argc, char *argv[]){
 	Bloco block;
 	block.valores_no_bloco = 0;
 	BTTablePrimClass btreePrim('w', "indicePrimario.dat");
+	BTTableSecClass btreeS('w', "indiceSecundario.dat");
 
 	cout << sizeof(Artigo) << endl;
 
@@ -75,7 +119,6 @@ int main(int argc, char *argv[]){
 
 	f.open(argv[1]);
 	out = fopen("Artigo.dat","w+");
-	out_ordenado = fopen("Artigo_ordenado.dat", "w");
 
 	HashBuckets hash_registros (out,"overflowFile",NUM_BUCKETS);
 
@@ -115,16 +158,8 @@ int main(int argc, char *argv[]){
 		block.bloco[block.valores_no_bloco] = registro;
 		block.valores_no_bloco++;
 
-		if(block.valores_no_bloco == 7) {
-			fwrite(&block,sizeof(Bloco),1,out_ordenado);
-			block.valores_no_bloco = 0;
-		}
-
 		hash_registros.insert(registro);
 //		cout << "inseridos " << count << " registros até'agora!!" << endl;
-	}
-	if(block.valores_no_bloco > 0){
-		fwrite(&block,sizeof(Bloco),1,out_ordenado);
 	}
 
 	f.close();
@@ -134,10 +169,12 @@ int main(int argc, char *argv[]){
 	cout << "Arquivo ordenado em hashing criado" << endl;
 
 	criaIndicePrimario(hash_registros, btreePrim);
-
 	cout << "Indice primario criado!" << endl;
 
-	cout << "Tamanho do nos: " << btreePrim.tamNo << endl;
+	criaIndiceSecundario(hash_registros, btreeS);
+	cout << "Indice secundario criado!" << endl;
+
+	/*cout << "Tamanho do nos: " << btreePrim.tamNo << endl;
 	cout << "Numero de itens: " << btreePrim.numItens << endl;
 	cout << "Numero de nos: " << btreePrim.numNos << endl;
 	cout << "Teste: busca chave" << endl;
@@ -148,10 +185,9 @@ int main(int argc, char *argv[]){
 	else {
 		cout << "Nao encontrado!" << endl;
 		cout << "Chave: " << itemBuscado.id << " Local: " << itemBuscado.pontBucket << endl;
-	}
+	}*/
 
 	fclose(out);
-	fclose(out_ordenado);
 
 	return 0;
 }
