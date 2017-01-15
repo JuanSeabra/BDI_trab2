@@ -9,8 +9,6 @@ using namespace std;
 #include "artigo.h"
 #include "hashing.h"
 #include "btree_prim.h"
-#include "btree_sec.h"
-#include "auxiliar.h"
 
 #define NUM_BUCKETS 218880
 
@@ -69,7 +67,8 @@ int main(int argc, char *argv[]) {
 			imprimeArtigo(artigoBuscado);
 
 			//imprimir o num de blocos lidos (num na arvore B + o bloco do bucket) e o num de blocos totais
-			cout << "Blocos lidos para encontrar: " << blocosLidos << " (indice) + " << 1 << " (arquivo de dados)" << endl;
+			cout << "Blocos lidos para encontrar: " << blocosLidos << " (indice) + " 
+			<< 1 << " (arquivo de dados) = " << blocosLidos+1 << endl;
 			cout << "Total de blocos indice primario: " << btree_prim.numNos << endl;
 		}
 

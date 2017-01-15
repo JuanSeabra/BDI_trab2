@@ -121,6 +121,7 @@ int main(int argc, char *argv[]){
 
 	HashBuckets hash_registros (out,"overflowFile", NUM_BUCKETS, 'w');
 
+	cout << "Organizando o arquivo de dados por hashing... aguarde" << endl;
 	while (getline(f,linha)) {
 		strs = parse(linha);
 
