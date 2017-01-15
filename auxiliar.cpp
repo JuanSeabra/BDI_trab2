@@ -1,5 +1,9 @@
 #include "auxiliar.h"
 
+/*
+    Construtor. Recebe um modo de leitura e abre o arquivo 
+    para leitura ou escrita.
+*/
 Auxiliar::Auxiliar(char modo, char* nomeArq) {
     modoAbert = modo;
 
@@ -20,6 +24,7 @@ Auxiliar::Auxiliar(char modo, char* nomeArq) {
     }
 }
 
+//Destrutor. Fecha o arquivo.
 Auxiliar::~Auxiliar() {
     arqAux.close();
 }

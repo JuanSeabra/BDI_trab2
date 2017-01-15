@@ -23,7 +23,6 @@ class BTTableSecClass {
 public:
 	BTTableSecClass(char modo, char* nomeArq);
 	~BTTableSecClass(void);
-	bool vazio(void) const;
 	bool inserir(const TipoIndiceSec &item);
 	bool recuperar(char* chave, TipoIndiceSec &item);
 	bool recuperarContBlocos(char* chave, TipoIndiceSec &item, int& numBlocos);

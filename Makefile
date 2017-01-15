@@ -9,10 +9,10 @@ all: upload seek1 seek2 findrec
 upload: upload.o hashing.o btree_prim.o btree_sec.o auxiliar.o
 	$(CC) -o $@ $^ $(CFLAGS)
 
-seek1: seek1.o hashing.o btree_prim.o btree_sec.o auxiliar.o
+seek1: seek1.o hashing.o btree_prim.o
 	$(CC) -o $@ $^ $(CFLAGS)
 
-seek2: seek2.o hashing.o btree_prim.o btree_sec.o auxiliar.o
+seek2: seek2.o hashing.o btree_sec.o auxiliar.o
 	$(CC) -o $@ $^ $(CFLAGS)
 
 findrec: findrec.o hashing.o
