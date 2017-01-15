@@ -64,31 +64,35 @@ void criaIndiceSecundario(HashBuckets& hash_registros, BTTableSecClass& btree ) 
 
 	for (int i = 0; i < NUM_BUCKETS; i++) {
 		bucket_endereco = hash_registros.bucket_ptrs[i];
-		fseek(hash_registros.dataFile,bucket_endereco,SEEK_SET);
-		fread(bucket_em_memoria,sizeof(Bucket),1,hash_registros.dataFile);
-		for(int j = 0; j < bucket_em_memoria->num_registros_ocupados; j++) {
-			art = bucket_em_memoria->bloco[j];
-			BlocoAuxiliar blocoAux;
+		if (bucket_endereco != -1) {
+			fseek(hash_registros.dataFile,bucket_endereco,SEEK_SET);
+			fread(bucket_em_memoria,sizeof(Bucket),1,hash_registros.dataFile);
+		
+			for(int j = 0; j < bucket_em_memoria->num_registros_ocupados; j++) {
+				art = bucket_em_memoria->bloco[j];
+				BlocoAuxiliar blocoAux;
 
-			if (btree.recuperar(art.titulo, itemSec)) {
-				int endBloco = itemSec.pontBloco;
-				blocoAux = blocosAuxiliares.recuperar(endBloco);
-				int pos = blocoAux.cont;
+				if (btree.recuperar(art.titulo, itemSec)) {
+					int endBloco = itemSec.pontBloco;
+					blocoAux = blocosAuxiliares.recuperar(endBloco);
+					int pos = blocoAux.cont;
 
-				blocoAux.pontBucket[pos] = bucket_endereco;
-				blocoAux.posBucket[pos] = j;
-				blocosAuxiliares.atualizar(endBloco, blocoAux);
-			}
-			else {
-				blocoAux.pontBucket[0] = bucket_endereco;
-				blocoAux.posBucket[0] = j;
-				int endBloco = blocosAuxiliares.inserir(blocoAux);
+					blocoAux.pontBucket[pos] = bucket_endereco;
+					blocoAux.posBucket[pos] = j;
+					blocosAuxiliares.atualizar(endBloco, blocoAux);
+				}
+				else {
+					blocoAux.pontBucket[0] = bucket_endereco;
+					blocoAux.posBucket[0] = j;
+					int endBloco = blocosAuxiliares.inserir(blocoAux);
 
-				strcpy(itemSec.titulo, art.titulo);
-				itemSec.pontBloco = endBloco;
-				btree.inserir(itemSec);
+					strcpy(itemSec.titulo, art.titulo);
+					itemSec.pontBloco = endBloco;
+					btree.inserir(itemSec);
+				}
 			}
 		}
+		
 	}
 
 	delete bucket_em_memoria;
