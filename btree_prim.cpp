@@ -252,7 +252,7 @@ bool BTTablePrimClass::recuperar(int chave, TipoIndicePrim &item) {
 }
 
 /*
-	Verifica se um elemento esta na B tree
+	Verifica se um elemento esta na B tree e conta o numero de blocos lidos para acessa-lo
 */
 bool BTTablePrimClass::recuperarContBlocos(int chave, TipoIndicePrim &item, int& numBlocos) {
 	int raizAtual;
@@ -266,6 +266,11 @@ bool BTTablePrimClass::recuperarContBlocos(int chave, TipoIndicePrim &item, int&
 		arquivo.read(reinterpret_cast<char*> (&noAtual), tamNo);
 
 		numBlocos++;
+		/*cout << noAtual.qtd << endl;
+
+		for (int i = 0; i < noAtual.qtd; i++) {
+			cout << noAtual.chave[i].id << endl;
+		}*/
 		if (procuraNo(chave, local)) {
 			achou = true;
 			item = noAtual.chave[local];

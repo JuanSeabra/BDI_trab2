@@ -68,8 +68,8 @@ int main(int argc, char *argv[]) {
 			//imprimir todos os campos do artigo
 			imprimeArtigo(artigoBuscado);
 
-			//imprimir o num de blocos lidos e o num de blocos totais
-			cout << "Blocos lidos para encontrar: " << blocosLidos << endl;
+			//imprimir o num de blocos lidos (num na arvore B + o bloco do bucket) e o num de blocos totais
+			cout << "Blocos lidos para encontrar: " << blocosLidos + 1<< endl;
 			cout << "Total de blocos indice primario: " << btree_prim.numNos << endl;
 		}
 	}
