@@ -66,7 +66,7 @@ void criaIndiceSecundario(HashBuckets& hash_registros, BTTableSecClass& btree ) 
 		if (bucket_endereco != -1) {
 			fseek(hash_registros.dataFile,bucket_endereco,SEEK_SET);
 			fread(bucket_em_memoria,sizeof(Bucket),1,hash_registros.dataFile);
-		
+
 			for(int j = 0; j < bucket_em_memoria->num_registros_ocupados; j++) {
 				art = bucket_em_memoria->bloco[j];
 				BlocoAuxiliar blocoAux;
@@ -91,7 +91,7 @@ void criaIndiceSecundario(HashBuckets& hash_registros, BTTableSecClass& btree ) 
 				}
 			}
 		}
-		
+
 	}
 
 	delete bucket_em_memoria;
@@ -110,7 +110,6 @@ int main(int argc, char *argv[]){
 	BTTablePrimClass btreePrim('w', "indicePrimario.dat");
 	BTTableSecClass btreeS('w', "indiceSecundario.dat");
 
-	cout << sizeof(Artigo) << endl;
 
 	if(argc != 2){
 		cout << "Modo de uso ./upload <arquivo de entrada>" << endl;
@@ -148,7 +147,7 @@ int main(int argc, char *argv[]){
 		strncpy(registro.snippet,strs[6].c_str(),100);
 
 		count++;
-		if (count%7 == 0) bucket_count++;
+
 		strs.clear();
 
 		block.bloco[block.valores_no_bloco] = registro;
@@ -159,13 +158,12 @@ int main(int argc, char *argv[]){
 
 	f.close();
 
-	cout << "Foram escritos " << count << " registros!" << endl
-		<< "numero de blocos " << bucket_count+1 << endl;
+	cout << "Foram escritos " << count << " registros!" << endl;
 
 	cout << "Arquivo organizado por hashing criado!" << endl;
 
 	cout << "Criando indice primario, por favor aguarde" << endl;
-	criaIndicePrimario(hash_registros, btreePrim);	
+	criaIndicePrimario(hash_registros, btreePrim);
 	cout << "Indice primario criado!" << endl;
 
 	cout << "Criando indice secundario, por favor aguarde" << endl;

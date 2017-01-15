@@ -62,13 +62,11 @@ int HashBuckets::insert(Artigo registro){
 		bucket_em_memoria->num_registros_ocupados++;
 		fwrite(bucket_em_memoria,sizeof(Bucket),1,dataFile);
 		num_buckets++;
-		std::cout << "teste[1]" << std::endl;
 		delete bucket_em_memoria;
 		return 0;
 	}
 	bucket_em_memoria = new Bucket;
 	fseek(dataFile,bucket_ptrs[bucket_index],SEEK_SET);
-	std::cout << ftell(dataFile) << std::endl;
 	fread(bucket_em_memoria,sizeof(Bucket),1,dataFile);
 	if(bucket_em_memoria->num_registros_ocupados < 7){
 		bucket_em_memoria->bloco[bucket_em_memoria->num_registros_ocupados] = registro;
@@ -76,7 +74,6 @@ int HashBuckets::insert(Artigo registro){
 		fseek(dataFile,bucket_ptrs[bucket_index],SEEK_SET);
 		fwrite(bucket_em_memoria,sizeof(Bucket),1,dataFile);
 		num_buckets++;
-		std::cout << "teste[2]" << std::endl;
 		delete bucket_em_memoria;
 		return 0;
 	}
@@ -90,7 +87,6 @@ int HashBuckets::insert(Artigo registro){
 		overflow_em_memoria->num_registros_ocupados++;
 		fwrite(overflow_em_memoria,sizeof(Overflow),1,overflowFile);
 		num_buckets++;
-		std::cout << "teste[3]" << std::endl;
 		delete bucket_em_memoria;
 		delete overflow_em_memoria;
 		return 1;
@@ -105,13 +101,11 @@ int HashBuckets::insert(Artigo registro){
 			overflow_em_memoria->num_registros_ocupados++;
 			fwrite(overflow_em_memoria,sizeof(Overflow),1,overflowFile);
 			num_buckets++;
-			std::cout << "teste[4]" << std::endl;
 			delete overflow_em_memoria;
 			return 1;
 		}
 		ptr_overflow_anterior = ptr_overflow_lido;
 		ptr_overflow_lido = overflow_em_memoria->ptr_prox;
-		//delete overflow_em_memoria;
 	}
 	fseek(overflowFile,ptr_overflow_anterior,SEEK_SET);
 	fread(overflow_em_memoria,sizeof(Overflow),1,overflowFile);
@@ -122,7 +116,6 @@ int HashBuckets::insert(Artigo registro){
 	overflow_em_memoria->num_registros_ocupados++;
 	fwrite(overflow_em_memoria,sizeof(Overflow),1,overflowFile);
 	num_buckets++;
-	std::cout << "teste[5]" << std::endl;
 	delete overflow_em_memoria;
 	return 1;
 }
@@ -130,24 +123,28 @@ int HashBuckets::insert(Artigo registro){
 Artigo* HashBuckets::search(int id){
 	int bucket_index = HashInt(id);
 	int ptr_overflow_lido;
+	int num_blocos_lidos = 0;
 	Bucket *bucket_em_memoria;
 	Artigo *artigo_lido;
 	Overflow *overflow_em_memoria;
 	if (bucket_ptrs[bucket_index] == -1){
+		std::cout << "Número de blocos lidos: " << num_blocos_lidos << std::endl;
 		return NULL;
 	}
 	bucket_em_memoria = new Bucket;
 	fseek(dataFile,bucket_ptrs[bucket_index],SEEK_SET);
-	std::cout << ftell(dataFile) << std::endl;
 	fread(bucket_em_memoria,sizeof(Bucket),1,dataFile);
+	num_blocos_lidos++;
 	for (int i = 0; i < bucket_em_memoria->num_registros_ocupados; ++i) {
 		if(bucket_em_memoria->bloco[i].id == id){
 			artigo_lido = new Artigo;
 			*artigo_lido = bucket_em_memoria->bloco[i];
+			std::cout << "Número de blocos lidos: " << num_blocos_lidos << std::endl;
 			return artigo_lido;
 		}
 	}
 	if(bucket_em_memoria->ptr_arquivo_de_overflow == -1){
+		std::cout << "Número de blocos lidos: " << num_blocos_lidos << std::endl;
 		return NULL;
 	}
 	overflow_em_memoria = new Overflow;
@@ -155,15 +152,17 @@ Artigo* HashBuckets::search(int id){
 	while (ptr_overflow_lido != -1) {
 		fseek(overflowFile,ptr_overflow_lido,SEEK_SET);
 		fread(overflow_em_memoria,sizeof(Overflow),1,overflowFile);
+		num_blocos_lidos++;
 		for (int j = 0; j < overflow_em_memoria->num_registros_ocupados; ++j) {
 			if (overflow_em_memoria->bloco[j].id == id){
 			artigo_lido = new Artigo;
 			*artigo_lido = overflow_em_memoria->bloco[j];
+			std::cout << "Número de blocos lidos: " << num_blocos_lidos << std::endl;
 			return artigo_lido;
 			}
 		}
 		ptr_overflow_lido = overflow_em_memoria->ptr_prox;
 	}
+	std::cout << "Número de blocos lidos: " << num_blocos_lidos << std::endl;
 	return NULL;
-
 }
