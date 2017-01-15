@@ -4,6 +4,8 @@ DEPS =hashing.h btree_prim.h btree_sec.h auxiliar.h
 %.o: %.cpp  $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)
 
+all: upload seek1 seek2
+
 upload: upload.o hashing.o btree_prim.o btree_sec.o auxiliar.o
 	$(CC) -o $@ $^ $(CFLAGS)
 
