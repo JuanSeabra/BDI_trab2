@@ -26,11 +26,6 @@ using namespace std;
 //     primary index file (B-Tree) <victoria>
 //     secondary index file (B-Tree) <victoria e waldomiro>
 
-typedef struct {
-	Artigo bloco[7];
-	int valores_no_bloco;
-} Bloco;
-
 vector<string> parse(string s){
 	erase_all(s,"\\");
 	typedef tokenizer<escaped_list_separator<char> > so_tokenizer;
@@ -103,10 +98,8 @@ int main(int argc, char *argv[]){
 	FILE *out;
 	string linha,linha_aux;
 	Artigo registro;
-	int count = 0, bucket_count = 0;
+	int count = 0;
 	vector<string> strs;
-	Bloco block;
-	block.valores_no_bloco = 0;
 	BTTablePrimClass btreePrim('w', "indicePrimario.dat");
 	BTTableSecClass btreeS('w', "indiceSecundario.dat");
 
@@ -150,8 +143,6 @@ int main(int argc, char *argv[]){
 
 		strs.clear();
 
-		block.bloco[block.valores_no_bloco] = registro;
-		block.valores_no_bloco++;
 
 		hash_registros.insert(registro);
 	}
