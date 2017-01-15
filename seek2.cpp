@@ -64,8 +64,9 @@ int main(int argc, char *argv[]) {
 
 		//imprimir o num de blocos lidos (num na arvore B + o bloco do bucket) e o num de blocos totais
 		//cout << "Quantidade de ocorrencias: " << blocoAux.cont << endl;
-		cout << "Blocos lidos para encontrar: " << blocosLidos << " (indice) + " << blocoAux.cont << " (arquivo de dados)" << endl;
-		cout << "Total de blocos indice primario: " << btree_sec.numNos << endl;		
+		cout << "Blocos lidos para encontrar: " << blocosLidos << " (indice) + " << 1+ blocoAux.cont 
+		<< " (bloco auxiliar com ponteiros + arquivo de dados)" << endl;
+		cout << "Total de blocos indice secundario: " << btree_sec.numNos << endl;		
 	}
 	else {
 		cout << "Nao existe arquivo com este titulo cadastrado" << endl;

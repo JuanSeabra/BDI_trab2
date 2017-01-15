@@ -19,4 +19,4 @@ findrec: findrec.o hashing.o
 	$(CC) -o $@ $^ $(CFLAGS)
 
 clean:
-	rm *.o upload seek1 seek2
+	rm *.o upload seek1 seek2 findrec
