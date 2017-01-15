@@ -72,6 +72,8 @@ int main(int argc, char *argv[]) {
 			cout << "Blocos lidos para encontrar: " << blocosLidos + 1<< endl;
 			cout << "Total de blocos indice primario: " << btree_prim.numNos << endl;
 		}
+
+		delete bucket_em_memoria;
 	}
 	else {
 		cout << "Nao existe arquivo com este ID cadastrado" << endl;

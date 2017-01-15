@@ -28,7 +28,7 @@ Auxiliar::~Auxiliar() {
 int Auxiliar::inserir(BlocoAuxiliar blocoAtual) {
     int local;
 
-    blocoAtual.cont = 0;
+    blocoAtual.cont = 1;
     arqAux.seekp(0,ios::end);
     local = arqAux.tellp();
     arqAux.write(reinterpret_cast <char*> (&blocoAtual), sizeof(BlocoAuxiliar));

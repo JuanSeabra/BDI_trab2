@@ -26,6 +26,7 @@ public:
 	bool vazio(void) const;
 	bool inserir(const TipoIndiceSec &item);
 	bool recuperar(char* chave, TipoIndiceSec &item);
+	bool recuperarContBlocos(char* chave, TipoIndiceSec &item, int& numBlocos);
 
 	bool procuraNo(const char* buscado, int &local) const;
 	void addItem(const TipoIndiceSec &novoItem, int direitaNova,
