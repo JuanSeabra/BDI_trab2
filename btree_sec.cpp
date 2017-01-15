@@ -9,7 +9,7 @@
 
 /*
 	Construtor da classe: recebe um modo de abertura e um nome de arquivo.
-	Grava um cabecalho com as informacoes da arvore B.
+	No modo de escrita, grava um cabecalho com as informacoes da arvore B.
 	No modo de leitura, le este cabecalho.
 */
 BTTableSecClass::BTTableSecClass(char modo, char* nomeArquivo) {
@@ -46,7 +46,7 @@ BTTableSecClass::BTTableSecClass(char modo, char* nomeArquivo) {
 			exit(1);
 		}
 
-
+		//cria o cabecalho da arvore B
 		raiz = pontNullS;
 		numItens = 0;
 		numNos = 0;
@@ -77,16 +77,10 @@ BTTableSecClass::~BTTableSecClass(void) {
 	arquivo.close();
 }
 
-//Informa se a arvore esta vazia
-bool BTTableSecClass::vazio(void) const {
-	return (raiz == pontNullS);
-}
-
 //Verifica se um no esta na arvore B
 bool BTTableSecClass::procuraNo(const char* buscado, int &local) const {
 	bool achou = false;
 
-	//cout << "Quantidade de chaves do no: " << noAtual.qtd << endl;
 	if (strcmp(buscado, noAtual.chave[0].titulo) < 0)
 		local = -1;
 	else {
@@ -94,7 +88,7 @@ bool BTTableSecClass::procuraNo(const char* buscado, int &local) const {
 		while( (strcmp(buscado, noAtual.chave[local].titulo) < 0) && (local > 0)) {
 			local--;
 		}
-		//cout << endl;
+	
 		if (strcmp(buscado, noAtual.chave[local].titulo) == 0)
 			achou = true;
 	}
@@ -158,7 +152,10 @@ void BTTableSecClass::split(const TipoIndiceSec &itemAtual, int direitaAtual,
 	arquivo.write(reinterpret_cast<char*> (&noDireita), tamNo);
 }
 
-//adiciona um item a tabela
+/*
+	Encontra a posicao ideal para o novo item e o insere nesta posicao,
+	verificando a necessidade de realizar split
+*/
 void BTTableSecClass::coloca(const TipoIndiceSec &itemAtual, int raizAtual,
          bool &moveAcima, TipoIndiceSec &novoItem, int &direitaNova) {
 	int local;
@@ -252,7 +249,7 @@ bool BTTableSecClass::recuperar(char* chave, TipoIndiceSec &item) {
 }
 
 /*
-	Verifica se um elemento esta na B tree
+	Verifica se um elemento esta na B tree e conta o numero de blocos lidos para acessa-lo
 */
 bool BTTableSecClass::recuperarContBlocos(char* chave, TipoIndiceSec &item, int &numBlocos) {
 	int raizAtual;

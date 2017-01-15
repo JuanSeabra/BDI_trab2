@@ -62,7 +62,6 @@ int main(int argc, char *argv[]) {
 		delete bucket_em_memoria;
 
 		//imprimir o num de blocos lidos (num na arvore B + o bloco do bucket) e o num de blocos totais
-		//cout << "Quantidade de ocorrencias: " << blocoAux.cont << endl;
 		cout << "Blocos lidos para encontrar: " << blocosLidos << " (indice) + " << 1+ blocoAux.cont 
 		<< " (bloco auxiliar com ponteiros + arquivo de dados) = " <<  blocosLidos + 1 + blocoAux.cont << endl;
 		cout << "Total de blocos indice secundario: " << btree_sec.numNos << endl;		

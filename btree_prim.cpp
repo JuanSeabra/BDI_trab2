@@ -8,7 +8,7 @@
 
 /*
 	Construtor da classe: recebe um modo de abertura e um nome de arquivo.
-	Grava um cabecalho com as informacoes da arvore B.
+	No modo de escrita, grava um cabecalho com as informacoes da arvore B.
 	No modo de leitura, le este cabecalho.
 */
 BTTablePrimClass::BTTablePrimClass(char modo, char* nomeArquivo) {
@@ -45,7 +45,7 @@ BTTablePrimClass::BTTablePrimClass(char modo, char* nomeArquivo) {
 			exit(1);
 		}
 
-
+		//cria o cabecalho da arvore B
 		raiz = pontNull;
 		numItens = 0;
 		numNos = 0;
@@ -76,25 +76,18 @@ BTTablePrimClass::~BTTablePrimClass(void) {
 	arquivo.close();
 }
 
-//Informa se a arvore esta vazia
-bool BTTablePrimClass::vazio(void) const {
-	return (raiz == pontNull);
-}
-
-//Verifica se um no esta na arvore B
+//Verifica se um valor esta no bloco atual da arvore B
 bool BTTablePrimClass::procuraNo(const int buscado, int &local) const {
 	bool achou = false;
 
-	//cout << "Quantidade de chaves do no: " << noAtual.qtd << endl;
 	if (buscado < noAtual.chave[0].id)
 		local = -1;
 	else {
 		local = noAtual.qtd - 1;
 		while( (buscado < noAtual.chave[local].id) && (local > 0)) {
-			//cout << " " << noAtual.chave[local].id;
 			local--;
 		}
-		//cout << endl;
+		
 		if (buscado == noAtual.chave[local].id)
 			achou = true;
 	}
@@ -158,7 +151,10 @@ void BTTablePrimClass::split(const TipoIndicePrim &itemAtual, int direitaAtual,
 	arquivo.write(reinterpret_cast<char*> (&noDireita), tamNo);
 }
 
-//adiciona um item a tabela
+/*
+	Encontra a posicao ideal para o novo item e o insere nesta posicao,
+	verificando a necessidade de realizar split
+*/
 void BTTablePrimClass::coloca(const TipoIndicePrim &itemAtual, int raizAtual,
          bool &moveAcima, TipoIndicePrim &novoItem, int &direitaNova) {
 	int local;
@@ -187,12 +183,14 @@ void BTTablePrimClass::coloca(const TipoIndicePrim &itemAtual, int raizAtual,
 			arquivo.seekg(raizAtual*tamNo, ios::beg);
 			arquivo.read(reinterpret_cast<char*> (&noAtual), tamNo);
 
+			//ha espaco disponivel - pode adicionar
 			if (noAtual.qtd < maxChaves) {
 				moveAcima = false;
 				addItem(novoItem, direitaNova, noAtual, local+1);
 				arquivo.seekp(raizAtual*tamNo, ios::beg);
 				arquivo.write(reinterpret_cast<char*> (&noAtual), tamNo);
 			}
+			//nao ha espaco - precisa fazer split
 			else {
 				moveAcima = true;
 				split(novoItem, direitaNova, raizAtual, local, novoItem, direitaNova);
@@ -208,9 +206,10 @@ bool BTTablePrimClass::inserir(const TipoIndicePrim &item) {
 	int direitaNova;
 	TipoIndicePrim novoItem;
 
+	//realiza a insercao no local apropriado
 	coloca(item, raiz, moveAcima, novoItem, direitaNova);
 
-	//cria uma nova raiz
+	//cria uma nova raiz, caso seja necessario
 	if (moveAcima) {
 		noAtual.qtd = 1;
 		noAtual.chave[0] = novoItem;

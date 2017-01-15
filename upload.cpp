@@ -22,15 +22,15 @@ using namespace std;
 #include "auxiliar.h"
 
 
-//TODO hashing file <waldomiro>
+//	   hashing file <waldomiro>
 //     primary index file (B-Tree) <victoria>
 //     secondary index file (B-Tree) <victoria e waldomiro>
 
-typedef struct {
-	Artigo bloco[7];
-	int valores_no_bloco;
-} Bloco;
-
+/*
+	Funcao que recebe uma string e retorna uma lista de strings obtidas
+	a partir do parser da string de entrada, ou seja, separando os dados 
+	atraves	do separador
+*/
 vector<string> parse(string s){
 	erase_all(s,"\\");
 	typedef tokenizer<escaped_list_separator<char> > so_tokenizer;
@@ -54,6 +54,7 @@ void criaIndicePrimario(HashBuckets& hash_registros, BTTablePrimClass& btree) {
 	}
 }
 
+//Cria o arquivo de indice secundario com arvore B e o arquivo de blocos auxiliares
 void criaIndiceSecundario(HashBuckets& hash_registros, BTTableSecClass& btree ) {
 	TipoIndiceSec itemSec;
 	int bucket_endereco;
@@ -61,16 +62,23 @@ void criaIndiceSecundario(HashBuckets& hash_registros, BTTableSecClass& btree ) 
 	Artigo art;
 	Auxiliar blocosAuxiliares ('w', "blocoAux");
 
+	//percorre o hash sequencialmente
+	//para cada bucket
 	for (int i = 0; i < NUM_BUCKETS; i++) {
 		bucket_endereco = hash_registros.bucket_ptrs[i];
+		//verifica se o bucket esta realmente ocupado
 		if (bucket_endereco != -1) {
 			fseek(hash_registros.dataFile,bucket_endereco,SEEK_SET);
 			fread(bucket_em_memoria,sizeof(Bucket),1,hash_registros.dataFile);
 
+			//para cada artigo no bucket
 			for(int j = 0; j < bucket_em_memoria->num_registros_ocupados; j++) {
 				art = bucket_em_memoria->bloco[j];
 				BlocoAuxiliar blocoAux;
 
+				/*se ja existe este titulo na btree, acrescenta uma ocorrencia
+				  no bloco auxiliar
+				*/
 				if (btree.recuperar(art.titulo, itemSec)) {
 					int endBloco = itemSec.pontBloco;
 					blocoAux = blocosAuxiliares.recuperar(endBloco);
@@ -80,6 +88,7 @@ void criaIndiceSecundario(HashBuckets& hash_registros, BTTableSecClass& btree ) 
 					blocoAux.posBucket[pos] = j;
 					blocosAuxiliares.atualizar(endBloco, blocoAux);
 				}
+				//senao, cria um bloco auxiliar com a ocorrencia e coloca na btree
 				else {
 					blocoAux.pontBucket[0] = bucket_endereco;
 					blocoAux.posBucket[0] = j;
@@ -116,12 +125,14 @@ int main(int argc, char *argv[]){
 		exit(0);
 	}
 
+	//arquivo organizado por hashing
 	f.open(argv[1]);
 	out = fopen("Artigo.dat","w+");
-
 	HashBuckets hash_registros (out,"overflowFile", NUM_BUCKETS, 'w');
 
 	cout << "Organizando o arquivo de dados por hashing... aguarde" << endl;
+
+	//realizando o parsing da massa de entrada
 	while (getline(f,linha)) {
 		strs = parse(linha);
 
@@ -136,17 +147,11 @@ int main(int argc, char *argv[]){
 
 
 		strncpy(registro.titulo,strs[1].c_str(),300);
-
 		registro.ano = (unsigned short) stoi(strs[2]);
-
 		strncpy(registro.autores,strs[3].c_str(),100);
-
 		registro.citacoes = (unsigned) stoi(strs[4]);
-
 		strncpy(registro.atualizacao,strs[5].c_str(),19);
-
 		strncpy(registro.snippet,strs[6].c_str(),100);
-
 		count++;
 
 		strs.clear();

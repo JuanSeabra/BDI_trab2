@@ -23,7 +23,6 @@ class BTTablePrimClass {
 public:
 	BTTablePrimClass(char modo, char* nomeArq);
 	~BTTablePrimClass(void);
-	bool vazio(void) const;
 	bool inserir(const TipoIndicePrim &item);
 	bool recuperar(int chave, TipoIndicePrim &item);
 	bool recuperarContBlocos(int chave, TipoIndicePrim &item, int& numBlocos);
