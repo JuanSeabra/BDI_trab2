@@ -1,23 +1,24 @@
 #include "hashing.h"
 #include <iostream>
 
-HashBuckets::HashBuckets(char *hashFileName, FILE *dataFile, char *overflowFileName, int num_bucketsTotais){
-	hashFile = fopen(hashFileName,"w+");
-	fread(bucket_ptrs,sizeof(int),num_bucketsTotais,hashFile);
-	this->num_bucketsTotais = num_bucketsTotais;
-	this->dataFile = dataFile;
-	this->overflowFile = fopen(overflowFileName,"w+");
-	this->num_buckets = 0;
-}
-
-HashBuckets::HashBuckets(FILE *dataFile, char *overflowFileName, int num_bucketsTotais){
-	hashFile = fopen("bucketIndexes","w+");
-	bucket_ptrs = new int[num_bucketsTotais];
-	this->num_bucketsTotais = num_bucketsTotais;
-	this->dataFile = dataFile;
-	this->overflowFile = fopen(overflowFileName,"w+");
-	this->num_buckets = 0;
-	std::fill_n(bucket_ptrs, num_bucketsTotais, -1);
+HashBuckets::HashBuckets(FILE *dataFile, char *overflowFileName, int num_bucketsTotais, char *hashFileName,  char modo){
+	if ( modo == 'w'){
+		hashFile = fopen("bucketIndexes","w+");
+		bucket_ptrs = new int[num_bucketsTotais];
+		this->num_bucketsTotais = num_bucketsTotais;
+		this->dataFile = dataFile;
+		this->overflowFile = fopen(overflowFileName,"w+");
+		this->num_buckets = 0;
+		std::fill_n(bucket_ptrs, num_bucketsTotais, -1);
+	}
+	if (modo == 'r'){
+		hashFile = fopen(hashFileName,"r");
+		fread(bucket_ptrs,sizeof(int),num_bucketsTotais,hashFile);
+		this->num_bucketsTotais = num_bucketsTotais;
+		this->dataFile = dataFile;
+		this->overflowFile = fopen(overflowFileName,"r");
+		this->num_buckets = 0;
+	}
 }
 
 HashBuckets::~HashBuckets(){

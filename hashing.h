@@ -25,7 +25,7 @@ class HashBuckets {
 	public:
 		//Construtor
 		HashBuckets (char *hashFileName, FILE *dataFile, char *overflowFileName, int num_buckets);
-		HashBuckets(FILE *dataFile, char *overflowFileName, int num_buckets);
+		HashBuckets(FILE *dataFile, char *overflowFileName, int num_buckets, char *hashFileName, char modo);
 		~HashBuckets();
 
 		//Inserção
