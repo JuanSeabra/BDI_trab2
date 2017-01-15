@@ -165,11 +165,11 @@ int main(int argc, char *argv[]){
 	cout << "Arquivo organizado por hashing criado!" << endl;
 
 	cout << "Criando indice primario, por favor aguarde" << endl;
-	//criaIndicePrimario(hash_registros, btreePrim);	
+	criaIndicePrimario(hash_registros, btreePrim);	
 	cout << "Indice primario criado!" << endl;
 
 	cout << "Criando indice secundario, por favor aguarde" << endl;
-	//criaIndiceSecundario(hash_registros, btreeS);
+	criaIndiceSecundario(hash_registros, btreeS);
 	cout << "Indice secundario criado!" << endl;
 
 	fclose(out);
