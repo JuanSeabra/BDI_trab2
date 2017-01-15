@@ -121,7 +121,7 @@ int main(int argc, char *argv[]){
 	f.open(argv[1]);
 	out = fopen("Artigo.dat","w+");
 
-	HashBuckets hash_registros (out,"overflowFile",NUM_BUCKETS);
+	HashBuckets hash_registros (out,"overflowFile", NUM_BUCKETS, 'w');
 
 	while (getline(f,linha)) {
 		strs = parse(linha);
