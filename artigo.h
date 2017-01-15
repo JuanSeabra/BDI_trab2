@@ -3,12 +3,12 @@
 
 typedef struct{
 	int id;
-	char titulo[300];
+	char titulo[301];
 	unsigned short ano;
-	char autores[100];
+	char autores[101];
 	unsigned citacoes;
-	char atualizacao[19];
-	char snippet[100];
+	char atualizacao[20];
+	char snippet[101];
 }Artigo;
 
 #endif /*__ARTIGO_H__*/

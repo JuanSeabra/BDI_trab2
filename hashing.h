@@ -7,6 +7,8 @@
 
 #include "artigo.h"
 
+#define NUM_BUCKETS 218880
+
 /*Bucket escrito no arquivo*/
 typedef struct {
 	Artigo bloco[7]; //blocos
@@ -31,7 +33,7 @@ class HashBuckets {
 		//Inserção
 		//reorna 1 se houve overflow e 0 se não houve
 		int insert(Artigo registro);
-
+		Artigo* search(int id);
 		FILE *dataFile, *overflowFile, *hashFile;
 		int *bucket_ptrs; //-1 = NULL, qualquer outro valor = endereço do bucket
 		int num_buckets;

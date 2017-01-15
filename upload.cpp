@@ -21,7 +21,6 @@ using namespace std;
 #include "btree_sec.h"
 #include "auxiliar.h"
 
-#define NUM_BUCKETS 218880
 
 //TODO hashing file <waldomiro>
 //     primary index file (B-Tree) <victoria>
@@ -146,7 +145,6 @@ int main(int argc, char *argv[]){
 
 		strncpy(registro.atualizacao,strs[5].c_str(),19);
 
-
 		strncpy(registro.snippet,strs[6].c_str(),100);
 
 		count++;
@@ -167,11 +165,11 @@ int main(int argc, char *argv[]){
 	cout << "Arquivo organizado por hashing criado!" << endl;
 
 	cout << "Criando indice primario, por favor aguarde" << endl;
-	criaIndicePrimario(hash_registros, btreePrim);	
+	//criaIndicePrimario(hash_registros, btreePrim);	
 	cout << "Indice primario criado!" << endl;
 
 	cout << "Criando indice secundario, por favor aguarde" << endl;
-	criaIndiceSecundario(hash_registros, btreeS);
+	//criaIndiceSecundario(hash_registros, btreeS);
 	cout << "Indice secundario criado!" << endl;
 
 	fclose(out);
