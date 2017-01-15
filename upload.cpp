@@ -21,7 +21,7 @@ using namespace std;
 #include "btree_sec.h"
 #include "auxiliar.h"
 
-#define NUM_BUCKETS 145920
+#define NUM_BUCKETS 218880
 
 //TODO hashing file <waldomiro>
 //     primary index file (B-Tree) <victoria>
@@ -60,20 +60,17 @@ void criaIndiceSecundario(HashBuckets& hash_registros, BTTableSecClass& btree ) 
 	int bucket_endereco;
 	Bucket *bucket_em_memoria = new Bucket;
 	Artigo art;
-	Auxiliar blocosAuxiliares ("blocoAux");
+	Auxiliar blocosAuxiliares ('w', "blocoAux");
 
 	for (int i = 0; i < NUM_BUCKETS; i++) {
 		bucket_endereco = hash_registros.bucket_ptrs[i];
+		fseek(hash_registros.dataFile,bucket_endereco,SEEK_SET);
 		fread(bucket_em_memoria,sizeof(Bucket),1,hash_registros.dataFile);
 		for(int j = 0; j < bucket_em_memoria->num_registros_ocupados; j++) {
 			art = bucket_em_memoria->bloco[j];
 			BlocoAuxiliar blocoAux;
 
 			if (btree.recuperar(art.titulo, itemSec)) {
-				//cout << "Titulo do cao: " << art.titulo << endl;
-				//cout << "Titulo do cao encontrado: " << itemSec.titulo << endl;
-				//cout << "Posicao do cao: " << itemSec.pontBloco << endl;
-
 				int endBloco = itemSec.pontBloco;
 				blocoAux = blocosAuxiliares.recuperar(endBloco);
 				int pos = blocoAux.cont;
@@ -148,9 +145,6 @@ int main(int argc, char *argv[]){
 
 		strncpy(registro.snippet,strs[6].c_str(),100);
 
-		//Escreve arquivo de dados
-		//Escreve arquivo de indice primario
-		//Escreve arquivo de indice secundario
 		count++;
 		if (count%7 == 0) bucket_count++;
 		strs.clear();
@@ -159,33 +153,22 @@ int main(int argc, char *argv[]){
 		block.valores_no_bloco++;
 
 		hash_registros.insert(registro);
-//		cout << "inseridos " << count << " registros até'agora!!" << endl;
 	}
 
 	f.close();
 
 	cout << "Foram escritos " << count << " registros!" << endl
-		<< "numero de buckets " << bucket_count+1 << endl;
-	cout << "Arquivo ordenado em hashing criado" << endl;
+		<< "numero de blocos " << bucket_count+1 << endl;
 
-	criaIndicePrimario(hash_registros, btreePrim);
+	cout << "Arquivo organizado por hashing criado!" << endl;
+
+	cout << "Criando indice primario, por favor aguarde" << endl;
+	criaIndicePrimario(hash_registros, btreePrim);	
 	cout << "Indice primario criado!" << endl;
 
+	cout << "Criando indice secundario, por favor aguarde" << endl;
 	criaIndiceSecundario(hash_registros, btreeS);
 	cout << "Indice secundario criado!" << endl;
-
-	/*cout << "Tamanho do nos: " << btreePrim.tamNo << endl;
-	cout << "Numero de itens: " << btreePrim.numItens << endl;
-	cout << "Numero de nos: " << btreePrim.numNos << endl;
-	cout << "Teste: busca chave" << endl;
-	TipoIndicePrim itemBuscado;
-	if (btreePrim.recuperar(145919, itemBuscado)) {
-		cout << "Chave: " << itemBuscado.id << " Local: " << itemBuscado.pontBucket << endl;
-	}
-	else {
-		cout << "Nao encontrado!" << endl;
-		cout << "Chave: " << itemBuscado.id << " Local: " << itemBuscado.pontBucket << endl;
-	}*/
 
 	fclose(out);
 

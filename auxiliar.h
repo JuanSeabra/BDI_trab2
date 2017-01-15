@@ -11,11 +11,12 @@ typedef struct {
 
 class Auxiliar {
 public:
-    Auxiliar(char* nomeArq);
+    Auxiliar(char modo, char* nomeArq);
     ~Auxiliar();
     int inserir(BlocoAuxiliar blocoAtual);
     void atualizar(int local, BlocoAuxiliar blocoAtual);
     BlocoAuxiliar recuperar(int local);
 
     fstream arqAux;
+    char modoAbert;
 };
