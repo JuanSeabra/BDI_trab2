@@ -250,3 +250,29 @@ bool BTTablePrimClass::recuperar(int chave, TipoIndicePrim &item) {
 
 	return achou;
 }
+
+/*
+	Verifica se um elemento esta na B tree
+*/
+bool BTTablePrimClass::recuperarContBlocos(int chave, TipoIndicePrim &item, int& numBlocos) {
+	int raizAtual;
+	int local;
+	bool achou = false;
+	raizAtual = raiz;
+	numBlocos = 0;
+
+	while(raizAtual != pontNull && !achou) {
+		arquivo.seekg(raizAtual*tamNo, ios::beg);
+		arquivo.read(reinterpret_cast<char*> (&noAtual), tamNo);
+
+		numBlocos++;
+		if (procuraNo(chave, local)) {
+			achou = true;
+			item = noAtual.chave[local];
+		}
+		else
+			raizAtual = noAtual.ponteiros[local+1];
+	}
+
+	return achou;
+}
