@@ -1,7 +1,7 @@
 #include "hashing.h"
 #include <iostream>
 
-HashBuckets::HashBuckets(FILE *dataFile, char *overflowFileName, int num_bucketsTotais, char *hashFileName,  char modo){
+HashBuckets::HashBuckets(FILE *dataFile, char *overflowFileName, int num_bucketsTotais, char modo){
 	if ( modo == 'w'){
 		hashFile = fopen("bucketIndexes","w+");
 		bucket_ptrs = new int[num_bucketsTotais];
@@ -12,7 +12,7 @@ HashBuckets::HashBuckets(FILE *dataFile, char *overflowFileName, int num_buckets
 		std::fill_n(bucket_ptrs, num_bucketsTotais, -1);
 	}
 	if (modo == 'r'){
-		hashFile = fopen(hashFileName,"r");
+		hashFile = fopen("bucketIndexes","r");
 		fread(bucket_ptrs,sizeof(int),num_bucketsTotais,hashFile);
 		this->num_bucketsTotais = num_bucketsTotais;
 		this->dataFile = dataFile;
