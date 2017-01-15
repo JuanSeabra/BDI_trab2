@@ -1,11 +1,22 @@
 #include "auxiliar.h"
 
-Auxiliar::Auxiliar(char* nomeArq) {
-    arqAux.open(nomeArq, ios::in | ios::out | ios::trunc | ios::binary);
+Auxiliar::Auxiliar(char modo, char* nomeArq) {
+    modoAbert = modo;
 
-    if (arqAux.fail()) {
-        cerr << "Erro ao abrir o arquivo" << endl;
-        exit(1);
+    if (modo == 'w') {
+        arqAux.open(nomeArq, ios::in | ios::out | ios::trunc | ios::binary);
+
+        if (arqAux.fail()) {
+            cerr << "Erro ao abrir o arquivo" << endl;
+            exit(1);
+        }
+    }
+    else if (modo == 'r') {
+        arqAux.open(nomeArq, ios::in | ios::binary);
+        if (arqAux.fail()) {
+            cerr << "Erro ao abrir o arquivo" << endl;
+            exit(1);
+        }
     }
 }
 
