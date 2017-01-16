@@ -10,6 +10,7 @@ int main(int argc, char *argv[]){
 	dataFile = fopen("Artigo.dat","rb");
 	HashBuckets hash_registros (dataFile,"overflowFile", NUM_BUCKETS, 'r');
 	artigo_buscado = hash_registros.search(atoi(argv[1]));
+	std::cout << "num blocos " << hash_registros.num_buckets << std::endl;
 	if(artigo_buscado == NULL){
 		std::cout << "id buscado não existe!" << std::endl;
 		return 0;

@@ -21,7 +21,7 @@ HashBuckets::HashBuckets(FILE *dataFile, char *overflowFileName, int num_buckets
 		this->num_bucketsTotais = num_bucketsTotais;
 		this->dataFile = dataFile;
 		this->overflowFile = fopen(overflowFileName,"r");
-		this->num_buckets = 0;
+		fread(&num_buckets,sizeof(int),1,hashFile);
 	}
 }
 
@@ -29,7 +29,8 @@ HashBuckets::HashBuckets(FILE *dataFile, char *overflowFileName, int num_buckets
 //escreve o arquivo de hash e fecha os arquivos
 HashBuckets::~HashBuckets(){
 	fseek(hashFile,0,SEEK_SET);
-	fwrite(bucket_ptrs,sizeof(int),num_buckets,hashFile);
+	fwrite(bucket_ptrs,sizeof(int),num_bucketsTotais,hashFile);
+	fwrite(&num_buckets,sizeof(int),1,hashFile);
 	fclose(hashFile);
 	fclose(overflowFile);
 	//delete bucket_ptrs;
