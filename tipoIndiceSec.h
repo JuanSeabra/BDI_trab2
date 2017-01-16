@@ -7,5 +7,5 @@ const int tamTitulo = 300;
 
 typedef struct {
 	char titulo[tamTitulo];
-	int pontBloco;
+	unsigned int pontBloco;
 }TipoIndiceSec;
