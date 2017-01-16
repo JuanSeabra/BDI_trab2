@@ -3,7 +3,7 @@
 
 using namespace std;
 
-const int tamTitulo = 300;
+const int tamTitulo = 301;
 
 typedef struct {
 	char titulo[tamTitulo];
