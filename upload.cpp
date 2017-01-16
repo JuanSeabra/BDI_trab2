@@ -113,7 +113,7 @@ int main(int argc, char *argv[]){
 	FILE *out;
 	string linha,linha_aux;
 	Artigo registro;
-	int count = 0, bucket_count = 0;
+	int count = 0;
 	vector<string> strs;
 	BTTablePrimClass btreePrim('w', "indicePrimario.dat");
 	BTTableSecClass btreeS('w', "indiceSecundario.dat");
