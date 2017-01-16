@@ -80,7 +80,7 @@ void criaIndiceSecundario(HashBuckets& hash_registros, BTTableSecClass& btree ) 
 				  no bloco auxiliar
 				*/
 				if (btree.recuperar(art.titulo, itemSec)) {
-					int endBloco = itemSec.pontBloco;
+					unsigned endBloco = itemSec.pontBloco;
 					blocoAux = blocosAuxiliares.recuperar(endBloco);
 					int pos = blocoAux.cont;
 
@@ -92,7 +92,8 @@ void criaIndiceSecundario(HashBuckets& hash_registros, BTTableSecClass& btree ) 
 				else {
 					blocoAux.pontBucket[0] = bucket_endereco;
 					blocoAux.posBucket[0] = j;
-					int endBloco = blocosAuxiliares.inserir(blocoAux);
+					blocoAux.cont = 1;
+					unsigned endBloco = blocosAuxiliares.inserir(blocoAux);
 
 					strcpy(itemSec.titulo, art.titulo);
 					itemSec.pontBloco = endBloco;
@@ -114,8 +115,6 @@ int main(int argc, char *argv[]){
 	Artigo registro;
 	int count = 0, bucket_count = 0;
 	vector<string> strs;
-	Bloco block;
-	block.valores_no_bloco = 0;
 	BTTablePrimClass btreePrim('w', "indicePrimario.dat");
 	BTTableSecClass btreeS('w', "indiceSecundario.dat");
 
@@ -155,10 +154,6 @@ int main(int argc, char *argv[]){
 		count++;
 
 		strs.clear();
-
-		block.bloco[block.valores_no_bloco] = registro;
-		block.valores_no_bloco++;
-
 		hash_registros.insert(registro);
 	}
 

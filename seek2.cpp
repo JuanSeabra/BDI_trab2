@@ -43,11 +43,10 @@ int main(int argc, char *argv[]) {
 
 	if (btree_sec.recuperarContBlocos(titulo_buscado, itemBuscado, blocosLidos)) {
 		//obter o endereco do bloco auxiliar contendo estas ocorrencias
-		int end_bloco = itemBuscado.pontBloco;
+		unsigned end_bloco = itemBuscado.pontBloco;
 		BlocoAuxiliar blocoAux = blocosAuxiliares.recuperar(end_bloco);
 		Artigo artigoBuscado;
 		Bucket *bucket_em_memoria = new Bucket;
-
 		for (int i = 0; i < blocoAux.cont; i++) {
 			int bucket_endereco = blocoAux.pontBucket[i];
 			int pos_bucket = blocoAux.posBucket[i];

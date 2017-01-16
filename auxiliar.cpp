@@ -30,8 +30,8 @@ Auxiliar::~Auxiliar() {
 }
 
 //Insere um novo bloco no arquivo de auxiliares
-int Auxiliar::inserir(BlocoAuxiliar blocoAtual) {
-    int local;
+unsigned Auxiliar::inserir(BlocoAuxiliar blocoAtual) {
+    unsigned local;
 
     blocoAtual.cont = 1;
     arqAux.seekp(0,ios::end);
@@ -42,14 +42,14 @@ int Auxiliar::inserir(BlocoAuxiliar blocoAtual) {
 }
 
 //Atualiza um bloco auxiliar ja existente
-void Auxiliar::atualizar(int local, BlocoAuxiliar blocoAtual) {
+void Auxiliar::atualizar(unsigned local, BlocoAuxiliar blocoAtual) {
     blocoAtual.cont++;
     arqAux.seekp(local, ios::beg);
     arqAux.write(reinterpret_cast <char*> (&blocoAtual), sizeof(BlocoAuxiliar));
 }
 
 //Obtem um bloco que ja esta presente no arquivo
-BlocoAuxiliar Auxiliar::recuperar(int local) {
+BlocoAuxiliar Auxiliar::recuperar(unsigned local) {
     BlocoAuxiliar blocoLido;
 
     arqAux.seekg(local, ios::beg);

@@ -13,9 +13,9 @@ class Auxiliar {
 public:
     Auxiliar(char modo, char* nomeArq);
     ~Auxiliar();
-    int inserir(BlocoAuxiliar blocoAtual);
-    void atualizar(int local, BlocoAuxiliar blocoAtual);
-    BlocoAuxiliar recuperar(int local);
+    unsigned inserir(BlocoAuxiliar blocoAtual);
+    void atualizar(unsigned local, BlocoAuxiliar blocoAtual);
+    BlocoAuxiliar recuperar(unsigned local);
 
     fstream arqAux;
     char modoAbert;
